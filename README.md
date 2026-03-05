@@ -20,11 +20,16 @@ The package is published as an ES module.  Ensure your environment supports
 
 ## Build (for contributors)
 
+Source lives in a `src` directory and is now organised into several
+smaller modules (`types.ts`, `data.ts`, `utils.ts`, `profile.ts`); the
+root `src/index.ts` simply re‑exports them.  TypeScript compiles everything to
+`dist`.
+
 ```bash
 git clone <repo>
 cd FakeData-npm
 npm install
-npm run build     # output in `dist/`
+npm run build     # compiles src/ → dist/
 npm run clean     # remove build output
 ```
 
@@ -36,13 +41,8 @@ import { generateFakeProfile } from 'fake-data-npm';
 const profile = generateFakeProfile({ countryName: 'France', birthGender: 'female' });
 console.log(profile); // Profile object with typed fields
 
-// other helpers:
-import {
-  randomItem,
-  generatePhoneNumber,
-  generateSocialHandleVariant,
-  ...
-} from 'fake-data-npm';
+// other helpers may be imported individually as needed, e.g.:
+import { randomItem, generatePhoneNumber, generateSocialHandleVariant } from 'fake-data-npm';
 
 console.log(generatePhoneNumber('+33')); // +33xxxxxxxxx
 ```

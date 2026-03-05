@@ -1,11 +1,16 @@
 import {
+    composeCSVFile,
+    generateCreditCard,
     generateFakeProfile,
+    generateFakeProfilesBatch,
     generatePassword,
+    generatePreferences,
+    getContinent,
     randomDateBetween,
     randomItem,
     randomUUID,
     shuffleArray,
-} from '../index';
+} from '../src/index';
 
 describe('utility helpers', () => {
     test('randomItem picks element from array', () => {
@@ -45,5 +50,37 @@ describe('utility helpers', () => {
         expect(profile).toHaveProperty('name');
         expect(profile).toHaveProperty('email');
         expect(typeof profile.age).toBe('number');
+    });
+
+    test('generateFakeProfilesBatch returns correct length', () => {
+        const batch = generateFakeProfilesBatch(5, {} as any);
+        expect(batch).toHaveLength(5);
+        batch.forEach((p) => expect(p).toHaveProperty('username'));
+    });
+
+    test('composeCSVFile produces header and rows', () => {
+        const batch = generateFakeProfilesBatch(2, {} as any);
+        const csv = composeCSVFile(batch as any);
+        const lines = csv.split('\n');
+        expect(lines[0]).toContain('name;surname;birth');
+        expect(lines.length).toBeGreaterThanOrEqual(3);
+    });
+
+    test('generateCreditCard returns valid-looking number', () => {
+        const card = generateCreditCard();
+        expect(card.number).toMatch(/^\d{15,16}$/);
+        expect(card.cvv).toMatch(/^\d{3}$/);
+    });
+
+    test('getContinent returns string for known code', () => {
+        const cont = getContinent('US');
+        expect(typeof cont).toBe('string');
+        expect(cont).not.toBe('Unknown');
+    });
+
+    test('generatePreferences returns map with numeric values', () => {
+        const prefs = generatePreferences([{foo:{Male:1,Female:1}}], 'Male');
+        expect(prefs).toHaveProperty('foo');
+        expect(typeof prefs.foo).toBe('number');
     });
 });
