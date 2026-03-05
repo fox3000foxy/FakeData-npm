@@ -27,7 +27,7 @@ jobs:
         run: npm run build
 
       - name: Publish to npm
-        if: github.ref_type == 'tag' || github.ref == 'refs/heads/main'
+        if: github.ref_type == 'tag' || github.ref == 'refs/heads/master'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
