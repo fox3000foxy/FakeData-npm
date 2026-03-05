@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import {
     composeCSVFile,
     generateCreditCard,
@@ -10,6 +12,7 @@ import {
     randomItem,
     randomUUID,
     shuffleArray,
+    writeCSVFile,
 } from '../src/index';
 
 describe('utility helpers', () => {
@@ -82,5 +85,14 @@ describe('utility helpers', () => {
         const prefs = generatePreferences([{foo:{Male:1,Female:1}}], 'Male');
         expect(prefs).toHaveProperty('foo');
         expect(typeof prefs.foo).toBe('number');
+    });
+
+    test('writeCSVFile creates a file', () => {
+        const tmp = path.join(__dirname, 'tmp.csv');
+        writeCSVFile(tmp, 'a,b,c');
+        expect(fs.existsSync(tmp)).toBe(true);
+        const content = fs.readFileSync(tmp, 'utf-8');
+        expect(content).toBe('a,b,c');
+        fs.unlinkSync(tmp);
     });
 });

@@ -1,4 +1,4 @@
-import { CreditCardInfo, Preferences, Profile } from './types';
+import { CreditCardInfo, Preferences } from '../types';
 /** Return a random element from an array. */
 export declare function randomItem<T>(arr: T[]): T;
 /** Shuffle the elements of an array in place (Fisher–Yates). */
@@ -34,6 +34,4 @@ export declare function getContinent(countryCode: string): string;
 export declare function generatePreferences(categories: any[], gender: 'Male' | 'Female'): Preferences;
 export declare function generateYouTubeChannelID(): string;
 export declare function range(min: number, max: number): number;
-export declare function composeCSVFile(data: Profile[]): string;
-export declare function writeCSVFile(filename: string, content: string): void;
-//# sourceMappingURL=utils.d.ts.map
+//# sourceMappingURL=core.d.ts.map

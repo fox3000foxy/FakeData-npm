@@ -1,9 +1,8 @@
 import crypto from 'crypto';
-import { countries, preferencesPublicitaires, rawDatasets } from './data';
-import { Profile } from './types';
+import { countries, preferencesPublicitaires, rawDatasets } from '../data';
+import { Profile } from '../types';
 import {
     buildCredibleEmailAddress,
-    composeCSVFile,
     generateCreditCard,
     generatePhoneNumber,
     generatePreferences,
@@ -14,7 +13,8 @@ import {
     getRandomUsername,
     randomItem,
     range
-} from './utils';
+} from '../utils';
+import { sexualities } from './constants';
 
 /**
  * Generate a fake user profile object.
@@ -138,82 +138,3 @@ export function generateFakeProfile(params: {
     return fakeProfile;
 }
 
-export function generateFakeProfilesBatch(
-    batchSize: number,
-    params: { countryName?: string; birthGender?: string }
-): Profile[] {
-    const profiles: Profile[] = [];
-    for (let i = 0; i < batchSize; i++) {
-        profiles.push(generateFakeProfile(params));
-    }
-    return profiles;
-}
-
-export function generateAndComposeCSV(
-    totalProfiles: number,
-    batchSize: number,
-    params: { countryName?: string; birthGender?: string }
-): string {
-    const profiles: Profile[] = [];
-    for (let i = 0; i < totalProfiles / batchSize; i++) {
-        console.log('Generated', i * batchSize);
-        const batch = generateFakeProfilesBatch(batchSize, params);
-        profiles.push(...batch);
-    }
-    return composeCSVFile(profiles);
-}
-
-
-// sexualities array definition (same as in original index.ts).
-const sexualities = [
-    'Lesbian',
-    'Gay',
-    'Bisexual',
-    'Transgender',
-    'Queer',
-    'Intersex',
-    'Asexual',
-    'Pansexual',
-    'Non-binary',
-    'Genderqueer',
-    'Androgyne',
-    'Bigenre',
-    'Agender',
-    'Genderfluid',
-    'Demisexual',
-    'Graysexual',
-    'Skoliosexual',
-    'Homoflexible',
-    'Heteroflexible',
-    'Queerplatonic',
-    'Polyamorous',
-    'Monogamous',
-    'Pangender',
-    'Omnisexual',
-    'Questioning',
-    'Two-Spirit',
-    'Autosexual',
-    'Gynesexual',
-    'Androphilia',
-    'Gynephilia',
-    'Sapiosexual',
-    'Demiromantic',
-    'Heteroromantic',
-    'Homoromantic',
-    'Biromantic',
-    'Panromantic',
-    'Polyromantic',
-    'Aroromantic',
-    'Greyromantic',
-    'Lithromantic',
-    'Frayromantic',
-    'Quoiromantic',
-    'Akoiromantic',
-    'Cupioromantic',
-    'Platoniromantic',
-    'Demisexuality',
-    'Lithsexuality',
-    'Fraysexuality',
-    'Apollosexuality',
-    'Queerplatonic',
-];

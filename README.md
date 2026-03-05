@@ -21,8 +21,10 @@ The package is published as an ES module.  Ensure your environment supports
 ## Build (for contributors)
 
 Source lives in a `src` directory and is now organised into several
-smaller modules (`types.ts`, `data.ts`, `utils.ts`, `profile.ts`); the
-root `src/index.ts` simply re‑exports them.  TypeScript compiles everything to
+smaller modules (`types.ts`, `data.ts`, `utils/core.ts`, `utils/csv.ts`,
+`profile.ts`).  Each subfolder contains a barrel (`utils/index.ts`) so you can
+`import { composeCSVFile } from 'fake-data-npm/utils'` if desired.  The root
+`src/index.ts` simply re‑exports everything.  TypeScript compiles everything to
 `dist`.
 
 ```bash
@@ -48,6 +50,14 @@ console.log(generatePhoneNumber('+33')); // +33xxxxxxxxx
 ```
 
 You can also generate batches (now typed as `Profile[]`) and export CSV:
+
+> **CSV utilities**
+> The CSV helpers live in a separate module; you can import them directly
+> without pulling in the entire profile generator:
+> ```ts
+> import { composeCSVFile, writeCSVFile } from 'fake-data-npm/utils';
+> ```
+
 
 ```ts
 import { generateAndComposeCSV } from 'fake-data-npm';
@@ -100,6 +110,11 @@ authenticate with npm.
 
 GitHub Packages publishing is conditional on the package being scoped (e.g.
 `@owner/name`); unscoped names are not allowed and will raise a 405 error.
+
+> **Dataset typing**
+> A `Datasets` TypeScript interface describing `datasets.json` is exported from
+> `fake-data-npm/data`.  Use `import type { Datasets } from 'fake-data-npm/data';`
+> and refer to `rawDatasets` for strongly‑typed access to the underlying JSON.
 
 ## Testing
 

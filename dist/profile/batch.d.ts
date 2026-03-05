@@ -1,12 +1,4 @@
-import { Profile } from './types';
-/**
- * Generate a fake user profile object.
- * @param params
- */
-export declare function generateFakeProfile(params: {
-    countryName?: string;
-    birthGender?: string;
-}): Profile;
+import type { Profile } from '../types';
 export declare function generateFakeProfilesBatch(batchSize: number, params: {
     countryName?: string;
     birthGender?: string;
@@ -15,4 +7,4 @@ export declare function generateAndComposeCSV(totalProfiles: number, batchSize: 
     countryName?: string;
     birthGender?: string;
 }): string;
-//# sourceMappingURL=profile.d.ts.map
+//# sourceMappingURL=batch.d.ts.map

@@ -1,6 +1,7 @@
 import crypto from 'crypto';
-import { countries, preferencesPublicitaires, rawDatasets } from './data';
-import { buildCredibleEmailAddress, composeCSVFile, generateCreditCard, generatePhoneNumber, generatePreferences, generateRandomDate, generateSocialHandleVariant, getAge, getContinent, getRandomUsername, randomItem, range } from './utils';
+import { countries, preferencesPublicitaires, rawDatasets } from '../data';
+import { buildCredibleEmailAddress, generateCreditCard, generatePhoneNumber, generatePreferences, generateRandomDate, generateSocialHandleVariant, getAge, getContinent, getRandomUsername, randomItem, range } from '../utils';
+import { sexualities } from './constants';
 /**
  * Generate a fake user profile object.
  * @param params
@@ -90,72 +91,3 @@ export function generateFakeProfile(params) {
     };
     return fakeProfile;
 }
-export function generateFakeProfilesBatch(batchSize, params) {
-    const profiles = [];
-    for (let i = 0; i < batchSize; i++) {
-        profiles.push(generateFakeProfile(params));
-    }
-    return profiles;
-}
-export function generateAndComposeCSV(totalProfiles, batchSize, params) {
-    const profiles = [];
-    for (let i = 0; i < totalProfiles / batchSize; i++) {
-        console.log('Generated', i * batchSize);
-        const batch = generateFakeProfilesBatch(batchSize, params);
-        profiles.push(...batch);
-    }
-    return composeCSVFile(profiles);
-}
-// sexualities array definition (same as in original index.ts).
-const sexualities = [
-    'Lesbian',
-    'Gay',
-    'Bisexual',
-    'Transgender',
-    'Queer',
-    'Intersex',
-    'Asexual',
-    'Pansexual',
-    'Non-binary',
-    'Genderqueer',
-    'Androgyne',
-    'Bigenre',
-    'Agender',
-    'Genderfluid',
-    'Demisexual',
-    'Graysexual',
-    'Skoliosexual',
-    'Homoflexible',
-    'Heteroflexible',
-    'Queerplatonic',
-    'Polyamorous',
-    'Monogamous',
-    'Pangender',
-    'Omnisexual',
-    'Questioning',
-    'Two-Spirit',
-    'Autosexual',
-    'Gynesexual',
-    'Androphilia',
-    'Gynephilia',
-    'Sapiosexual',
-    'Demiromantic',
-    'Heteroromantic',
-    'Homoromantic',
-    'Biromantic',
-    'Panromantic',
-    'Polyromantic',
-    'Aroromantic',
-    'Greyromantic',
-    'Lithromantic',
-    'Frayromantic',
-    'Quoiromantic',
-    'Akoiromantic',
-    'Cupioromantic',
-    'Platoniromantic',
-    'Demisexuality',
-    'Lithsexuality',
-    'Fraysexuality',
-    'Apollosexuality',
-    'Queerplatonic',
-];
