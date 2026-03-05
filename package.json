@@ -1,13 +1,16 @@
 {
   "name": "fake-data-npm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Library to generate fake profiles and related data",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "publish:npm": "npm publish",
+    "publish:github": "npm publish --registry=https://npm.pkg.github.com/fox3000foxy",
+    "publish:all": "npm run build && npm run publish:npm && npm run publish:github"
   },
   "keywords": [
     "fake",
@@ -16,6 +19,10 @@
   ],
   "author": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fox3000foxy/FakeData-npm.git"
+  },
   "devDependencies": {
     "@types/node": "^25.3.3",
     "typescript": "^5.0.0"
