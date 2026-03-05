@@ -1,6 +1,6 @@
 {
   "name": "fake-data-npm",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "description": "Library to generate fake profiles and related data",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,7 +10,8 @@
     "clean": "rm -rf dist",
     "publish:npm": "npm publish",
     "publish:github": "npm publish --registry=https://npm.pkg.github.com/fox3000foxy",
-    "publish:all": "npm run build && npm run publish:npm && npm run publish:github"
+    "publish:all": "npm run build && npm run publish:npm && npm run publish:github",
+    "test": "jest"
   },
   "keywords": [
     "fake",
@@ -21,10 +22,20 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fox3000foxy/FakeData-npm.git"
+    "url": "git+https://github.com/fox3000foxy/FakeData-npm.git"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/node": "^25.3.3",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.0.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/tests"
+    ]
   }
 }

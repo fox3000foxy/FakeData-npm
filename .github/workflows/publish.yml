@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - main
     tags:
       - 'v*.*.*'
 
@@ -26,10 +27,18 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Run tests
+        run: npm test
+
       - name: Publish to npm
-        if: github.ref_type == 'tag' || github.ref == 'refs/heads/master'
+        if: github.ref_type == 'tag' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # publish to the public registry and github package (if needed)
+          # publish to the public registry
           npm publish
+          # conditionally publish to GitHub Packages (requires scoped name)
+          name=$(node -p "require('./package.json').name")
+          if [[ "$name" == @* ]]; then
+            npm publish --registry=https://npm.pkg.github.com/${{ github.repository_owner }}
+          fi

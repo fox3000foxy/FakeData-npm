@@ -2,6 +2,56 @@ import crypto from 'crypto';
 import fs from 'fs';
 import datasets from './datasets.json';
 
+// expose raw datasets so callers can inspect or extend them
+export const rawDatasets = datasets;
+
+// ---------- types & interfaces ----------
+
+export interface Location {
+    street: { number: number; name: string };
+    city: string;
+    state: string;
+    country: { name: string; abbreviation: string; phoneCode: string; continent: string };
+    continent: string;
+}
+
+export interface Passwords {
+    raw: string;
+    salt: number;
+    md5: string;
+    sha1: string;
+    sha256: string;
+}
+
+export interface CreditCardInfo {
+    cc: string;
+    number: string;
+    cvv: string;
+    issuer: string;
+    expiration_year: number;
+    expiration_month: number;
+}
+
+export type SocialMediaMap = Record<string, string | null>;
+export type Preferences = Record<string, number>;
+
+export interface Profile {
+    name: string;
+    surname: string;
+    birth: string;
+    age: number;
+    username: string;
+    birthGender: string;
+    actualGender: string;
+    phone_number: string;
+    location: Location;
+    email: string;
+    passwords: Passwords;
+    social_media: SocialMediaMap;
+    credit_card: CreditCardInfo;
+    adChoices: string;
+}
+
 // helper utilities
 /**
  * Return a random element from an array.
@@ -11,6 +61,44 @@ import datasets from './datasets.json';
  */
 export function randomItem<T>(arr: T[]): T {
     return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/**
+ * Shuffle the elements of an array in place (Fisher–Yates).
+ */
+export function shuffleArray<T>(arr: T[]): T[] {
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
+
+/**
+ * Generate a RFC4122 v4 random UUID string.
+ */
+export function randomUUID(): string {
+    return crypto.randomUUID();
+}
+
+/**
+ * Generate a random password of given length composed of letters/numbers.
+ */
+export function generatePassword(length: number = 12): string {
+    const chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let pwd = '';
+    for (let i = 0; i < length; i++) {
+        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return pwd;
+}
+
+/**
+ * Return a random Date between two given dates.
+ */
+export function randomDateBetween(start: Date, end: Date): Date {
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
 
 /**
@@ -340,13 +428,7 @@ export function buildCredibleEmailAddress(
  * Generate a fake credit card number, CVV, issuer, expiry year and month.
  * @returns {{cc:string,cvv:string,issuer:string,exp_year:number,exp_month:number}}
  */
-export function generateCreditCard(): {
-    cc: string;
-    cvv: string;
-    issuer: string;
-    exp_year: number;
-    exp_month: number;
-} {
+export function generateCreditCard(): CreditCardInfo {
     const cardNumber: number[] = [];
     let checksum = 0;
     let issuer: string;
@@ -421,8 +503,9 @@ export function generateCreditCard(): {
         cc: cardNumberStr,
         cvv,
         issuer,
-        exp_year: expiryYear,
-        exp_month: expiryMonth,
+        expiration_year: expiryYear,
+        expiration_month: expiryMonth,
+        number: cardNumberStr,
     };
 }
 
@@ -449,7 +532,7 @@ export function generateRandomDate(): Date {
     dateIlYa30Ans.setFullYear(dateIlYa30Ans.getFullYear() - 80);
     const dateAleatoire = new Date(
         dateIlYa13Ans.getTime() +
-            Math.random() * (dateIlYa30Ans.getTime() - dateIlYa13Ans.getTime())
+        Math.random() * (dateIlYa30Ans.getTime() - dateIlYa13Ans.getTime())
     );
     return dateAleatoire;
 }
@@ -484,7 +567,7 @@ const preferencesPublicitaires: any = (datasets as any).adChoices;
  * @param {'Male'|'Female'} gender
  * @returns {Record<string, number>}
  */
-export function generatePreferences(categories: any[], gender: 'Male' | 'Female') {
+export function generatePreferences(categories: any[], gender: 'Male' | 'Female'): Preferences {
     categories.forEach((categorie) => {
         const categorieName = Object.keys(categorie)[0];
         const coef = Math.random() * 1 + 0.5;
@@ -529,7 +612,7 @@ export function generateYouTubeChannelID(): string {
 export function generateFakeProfile(params: {
     countryName?: string;
     birthGender?: string;
-}): string {
+}): Profile {
     let { countryName, birthGender } = params;
     let country: any;
     if (!countryName)
@@ -546,7 +629,7 @@ export function generateFakeProfile(params: {
     const person: { name: string; surname: string } = {
         name: randomItem<string>(
             (datasets as any)[country.abbreviation][
-                birthGender.toLowerCase() + '_first'
+            birthGender.toLowerCase() + '_first'
             ] as string[]
         ),
         surname: randomItem<string>(
@@ -562,164 +645,164 @@ export function generateFakeProfile(params: {
         Math.random() < 0.3
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'twitter'
-              );
+                person.name,
+                person.surname,
+                username,
+                'twitter'
+            );
     social_media['instagram'] =
         Math.random() < 0.1
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'instagram'
-              );
+                person.name,
+                person.surname,
+                username,
+                'instagram'
+            );
     social_media['facebook'] =
         Math.random() < 0.4
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'facebook'
-              );
+                person.name,
+                person.surname,
+                username,
+                'facebook'
+            );
     social_media['linkedin'] =
         Math.random() < 0.6
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'linkedin'
-              );
+                person.name,
+                person.surname,
+                username,
+                'linkedin'
+            );
     social_media['paypal'] =
         Math.random() < 0.5
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'paypal'
-              );
+                person.name,
+                person.surname,
+                username,
+                'paypal'
+            );
     social_media['ebay'] =
         Math.random() < 0.4
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'ebay'
-              );
+                person.name,
+                person.surname,
+                username,
+                'ebay'
+            );
     social_media['playstation'] =
         Math.random() < 0.2
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'playstation'
-              );
+                person.name,
+                person.surname,
+                username,
+                'playstation'
+            );
     social_media['battlenet'] =
         Math.random() < 0.3
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'battlenet'
-              );
+                person.name,
+                person.surname,
+                username,
+                'battlenet'
+            );
     social_media['bungiecord'] =
         Math.random() < 0.2
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'bungiecord'
-              );
+                person.name,
+                person.surname,
+                username,
+                'bungiecord'
+            );
     social_media['reddit'] =
         Math.random() < 0.4
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'reddit'
-              );
+                person.name,
+                person.surname,
+                username,
+                'reddit'
+            );
     social_media['steam'] =
         Math.random() < 0.5
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'steam'
-              );
+                person.name,
+                person.surname,
+                username,
+                'steam'
+            );
     social_media['tiktok'] =
         Math.random() < 0.3
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'tiktok'
-              );
+                person.name,
+                person.surname,
+                username,
+                'tiktok'
+            );
     social_media['xbox'] =
         Math.random() < 0.4
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'xbox'
-              );
+                person.name,
+                person.surname,
+                username,
+                'xbox'
+            );
     social_media['crunchyroll'] =
         Math.random() < 0.2
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'crunchyroll'
-              );
+                person.name,
+                person.surname,
+                username,
+                'crunchyroll'
+            );
     social_media['spotify'] =
         Math.random() < 0.5
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'spotify'
-              );
+                person.name,
+                person.surname,
+                username,
+                'spotify'
+            );
     social_media['epicgames'] =
         Math.random() < 0.3
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'epicgames'
-              );
+                person.name,
+                person.surname,
+                username,
+                'epicgames'
+            );
     social_media['github'] =
         Math.random() < 0.4
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'github'
-              );
+                person.name,
+                person.surname,
+                username,
+                'github'
+            );
     social_media['riotgames'] =
         Math.random() < 0.6
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'riotgames'
-              );
+                person.name,
+                person.surname,
+                username,
+                'riotgames'
+            );
     if (social_media['riotgames']) {
         social_media['leagueoflegends'] =
             Math.random() < 0.8 ? null : social_media['riotgames'];
@@ -728,22 +811,22 @@ export function generateFakeProfile(params: {
         Math.random() < 0.3
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'onlyfans'
-              );
+                person.name,
+                person.surname,
+                username,
+                'onlyfans'
+            );
     social_media['twitch'] =
         Math.random() < 0.4 ? null : username;
     social_media['youtube'] =
         Math.random() < 0.3
             ? null
             : generateSocialHandleVariant(
-                  person.name,
-                  person.surname,
-                  username,
-                  'youtube'
-              );
+                person.name,
+                person.surname,
+                username,
+                'youtube'
+            );
 
     const email = buildCredibleEmailAddress(
         person.name,
@@ -861,13 +944,14 @@ export function generateFakeProfile(params: {
             number: creditCardInfo.cc,
             cvv: creditCardInfo.cvv,
             issuer: creditCardInfo.issuer,
-            expiration_year: creditCardInfo.exp_year,
-            expiration_month: creditCardInfo.exp_month,
+            expiration_year: creditCardInfo.expiration_year,
+            expiration_month: creditCardInfo.expiration_month,
         },
         adChoices: preferencesBase64,
     };
 
-    return JSON.stringify(fakeProfile, null, 2);
+    // previously returned a JSON string; now we return the typed object
+    return fakeProfile;
 }
 
 /**
@@ -879,10 +963,10 @@ export function generateFakeProfile(params: {
 export function generateFakeProfilesBatch(
     batchSize: number,
     params: { countryName?: string; birthGender?: string }
-): any[] {
+): Profile[] {
     const profiles: any[] = [];
     for (let i = 0; i < batchSize; i++) {
-        profiles.push(JSON.parse(generateFakeProfile(params)));
+        profiles.push(generateFakeProfile(params));
     }
     return profiles;
 }
@@ -891,7 +975,7 @@ export function range(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-export function composeCSVFile(data: any[]): string {
+export function composeCSVFile(data: Profile[]): string {
     const header =
         'name;surname;birth;age;location_street_number;location_street_name;location_city;location_state;location_country_name;location_country_abbreviation;location_country_phoneCode;location_continent;username;birthGender;actualGender;phone_number;social_media_twitter;social_media_instagram;social_media_facebook;social_media_linkedin;social_media_youtube;social_media_twitch;email;credit_card_number;credit_card_cvv;credit_card_issuer;credit_card_expiration_month;credit_card_expiration_year;passwords_raw;passwords_salt;passwords_md5;passwords_sha1;passwords_sha256;adChoices\n';
 
