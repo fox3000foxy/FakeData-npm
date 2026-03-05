@@ -33,4 +33,3 @@ jobs:
         run: |
           # publish to the public registry and github package (if needed)
           npm publish
-          npm publish --registry=https://npm.pkg.github.com/fox3000foxy
