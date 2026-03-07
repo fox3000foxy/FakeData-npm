@@ -1,4 +1,4 @@
-import type { Profile } from '../types';
+import type { Profile } from '../types.js';
 export declare function generateFakeProfilesBatch(batchSize: number, params: {
     countryName?: string;
     birthGender?: string;

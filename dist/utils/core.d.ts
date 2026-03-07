@@ -1,4 +1,4 @@
-import { CreditCardInfo, Preferences } from '../types';
+import type { CreditCardInfo, Preferences } from '../types';
 /** Return a random element from an array. */
 export declare function randomItem<T>(arr: T[]): T;
 /** Shuffle the elements of an array in place (Fisher–Yates). */

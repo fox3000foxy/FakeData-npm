@@ -1,4 +1,4 @@
-import datasets from './datasets.json';
+import datasets from './datasets.json' assert { type: 'json' };
 // export raw dataset for callers who want to peek or extend
 export const rawDatasets = datasets;
 export const countries = rawDatasets.countries;

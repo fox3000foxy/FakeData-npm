@@ -1,3 +1,3 @@
-export * from './core';
-export * from './csv';
+export * from './core.js';
+export * from './csv.js';
 

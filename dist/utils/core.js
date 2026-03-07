@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { rawDatasets } from '../data';
+import { rawDatasets } from '../data.js';
 // helper utilities
 /** Return a random element from an array. */
 export function randomItem(arr) {
@@ -412,7 +412,7 @@ export function getAge(birthDate) {
     return age;
 }
 // continent lookup helper relies on data module
-import { continentsCountries } from '../data';
+import { continentsCountries } from '../data.js';
 export function getContinent(countryCode) {
     for (const continent in continentsCountries) {
         if (continentsCountries[continent].includes(countryCode)) {

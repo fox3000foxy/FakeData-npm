@@ -1,6 +1,6 @@
-import type { Profile } from '../types';
-import { composeCSVFile } from '../utils/csv';
-import { generateFakeProfile } from './generator';
+import type { Profile } from '../types.js';
+import { composeCSVFile } from '../utils/csv.js';
+import { generateFakeProfile } from './generator.js';
 
 export function generateFakeProfilesBatch(
     batchSize: number,

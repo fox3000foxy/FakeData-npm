@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import { countries, preferencesPublicitaires, rawDatasets } from '../data';
-import { Profile } from '../types';
+import { countries, preferencesPublicitaires, rawDatasets } from '../data.js';
+import { Profile } from '../types.js';
 import {
     buildCredibleEmailAddress,
     generateCreditCard,
@@ -13,8 +13,8 @@ import {
     getRandomUsername,
     randomItem,
     range
-} from '../utils';
-import { sexualities } from './constants';
+} from '../utils/index.js';
+import { sexualities } from './constants.js';
 
 /**
  * Generate a fake user profile object.

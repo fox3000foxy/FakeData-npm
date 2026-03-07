@@ -1,6 +1,6 @@
 {
   "name": "fake-data-npm",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Library to generate fake profiles and related data",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,6 +27,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^25.3.3",
+    "fake-data-npm": "link:",
     "jest": "^29.7.0",
     "ts-jest": "^29.4.6",
     "typescript": "^5.0.0"

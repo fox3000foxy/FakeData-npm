@@ -1,4 +1,4 @@
-import { Profile } from '../types';
+import { Profile } from '../types.js';
 /**
  * Generate a fake user profile object.
  * @param params

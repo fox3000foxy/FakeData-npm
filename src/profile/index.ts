@@ -1,4 +1,4 @@
-export * from './batch';
-export * from './constants';
-export * from './generator';
+export * from './batch.js';
+export * from './constants.js';
+export * from './generator.js';
 

@@ -1,4 +1,4 @@
-import datasets from './datasets.json';
+import datasets from './datasets.json' assert { type: 'json' };
 
 export interface Datasets {
     countries: Array<{ name: string; abbreviation: string; phoneCode: string; continent: string }>;

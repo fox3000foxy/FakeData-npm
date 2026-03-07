@@ -1,7 +1,7 @@
 import crypto from 'crypto';
-import { countries, preferencesPublicitaires, rawDatasets } from '../data';
-import { buildCredibleEmailAddress, generateCreditCard, generatePhoneNumber, generatePreferences, generateRandomDate, generateSocialHandleVariant, getAge, getContinent, getRandomUsername, randomItem, range } from '../utils';
-import { sexualities } from './constants';
+import { countries, preferencesPublicitaires, rawDatasets } from '../data.js';
+import { buildCredibleEmailAddress, generateCreditCard, generatePhoneNumber, generatePreferences, generateRandomDate, generateSocialHandleVariant, getAge, getContinent, getRandomUsername, randomItem, range } from '../utils/index.js';
+import { sexualities } from './constants.js';
 /**
  * Generate a fake user profile object.
  * @param params

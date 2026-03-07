@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 
-import { rawDatasets } from '../data';
-import { CreditCardInfo, Preferences } from '../types';
+import { rawDatasets } from '../data.js';
+import type { CreditCardInfo, Preferences } from '../types';
 
 // helper utilities
 
@@ -464,7 +464,7 @@ export function getAge(birthDate: Date): number {
 }
 
 // continent lookup helper relies on data module
-import { continentsCountries } from '../data';
+import { continentsCountries } from '../data.js';
 
 export function getContinent(countryCode: string): string {
     for (const continent in continentsCountries) {

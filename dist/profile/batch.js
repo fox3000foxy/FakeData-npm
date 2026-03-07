@@ -1,5 +1,5 @@
-import { composeCSVFile } from '../utils/csv';
-import { generateFakeProfile } from './generator';
+import { composeCSVFile } from '../utils/csv.js';
+import { generateFakeProfile } from './generator.js';
 export function generateFakeProfilesBatch(batchSize, params) {
     const profiles = [];
     for (let i = 0; i < batchSize; i++) {
