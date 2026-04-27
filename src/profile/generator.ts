@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { countries, preferencesPublicitaires, rawDatasets } from "../data.js";
-import { Profile } from "../types.js";
+import type { Profile } from "../types.js";
 import {
 	buildCredibleEmailAddress,
 	generateCreditCard,
