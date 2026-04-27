@@ -7,14 +7,14 @@ import type { CreditCardInfo, Preferences } from "../types";
 
 /** Return a random element from an array. */
 export function randomItem<T>(arr: T[]): T {
-	return arr[Math.floor(Math.random() * arr.length)];
+	return arr[Math.floor(Math.random() * arr.length)] as T;
 }
 
 /** Shuffle the elements of an array in place (Fisher–Yates). */
 export function shuffleArray<T>(arr: T[]): T[] {
 	for (let i = arr.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[arr[i], arr[j]] = [arr[j], arr[i]];
+		const j = Math.floor(Math.random() * (i + 1)) as number;
+		if (arr[i]) if (arr[j]) [arr[i], arr[j]] = [arr[j], arr[i]];
 	}
 	return arr;
 }

@@ -1,8 +1,15 @@
 import datasets from "./datasets.json";
 
+export interface Country {
+	name: string;
+	abbreviation: string;
+	phoneCode: string;
+	continent: string;
+}
+
 export interface Datasets {
-	countries: Array<{ name: string; abbreviation: string; phoneCode: string; continent: string }>;
-	adChoices: any;
+	countries: Country[];
+	adChoices: string;
 	continentsCountries: Record<string, string[]>;
 	mailboxes: Record<string, string[]>;
 	usernames: string[];
