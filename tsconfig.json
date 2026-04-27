@@ -8,9 +8,11 @@
     "strict": false,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "rootDir": "src",
     "outDir": "dist",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "ignoreDeprecations": "6.0"
   },
   "include": ["src/**/*"]
 }
