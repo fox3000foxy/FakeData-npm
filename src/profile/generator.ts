@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 import { countries, preferencesPublicitaires, rawDatasets } from "../data.js";
 import type { Profile } from "../types.js";
 import {
@@ -14,7 +14,6 @@ import {
 	randomItem,
 	range,
 } from "../utils/index.js";
-import { sexualities } from "./constants.js";
 
 /**
  * Generate a fake user profile object.
@@ -33,7 +32,7 @@ export function generateFakeProfile(params: { countryName?: string; birthGender?
 
 	if (!birthGender) birthGender = Math.random() < 0.5 ? "Male" : "Female";
 	const person: { name: string; surname: string } = {
-		name: randomItem<string>((rawDatasets as any)[country.abbreviation][birthGender.toLowerCase() + "_first"] as string[]),
+		name: randomItem<string>((rawDatasets as any)[country.abbreviation][`${birthGender.toLowerCase()}_first`] as string[]),
 		surname: randomItem<string>((rawDatasets as any)[country.abbreviation].last as string[]),
 	};
 
@@ -41,7 +40,7 @@ export function generateFakeProfile(params: { countryName?: string; birthGender?
 	const username = getRandomUsername();
 
 	const social_media: any = {};
-	social_media["twitter"] = Math.random() < 0.3 ? null : generateSocialHandleVariant(person.name, person.surname, username, "twitter");
+	social_media.twitter = Math.random() < 0.3 ? null : generateSocialHandleVariant(person.name, person.surname, username, "twitter");
 	// ... remainder of social_media assignments remain identical to original
 	// (omitted here for brevity, but would be copied entirely)
 

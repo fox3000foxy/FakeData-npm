@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 
 import { rawDatasets } from "../data.js";
 import type { CreditCardInfo, Preferences } from "../types";
@@ -52,7 +52,7 @@ export function generateSocialHandleVariant(name: string, surname: string, pseud
 	}
 
 	const pseudoEnMinuscules = pseudo.toLowerCase();
-	const nameEnMinuscules = name.toLowerCase();
+	const _nameEnMinuscules = name.toLowerCase();
 	const surnameEnMinuscules = surname.toLowerCase();
 	const numeroRandom = Math.floor(Math.random() * 100);
 	const chiffresSuite = generateRandomDigits(5);
@@ -109,61 +109,61 @@ export function generateSocialHandleVariant(name: string, surname: string, pseud
 			pseudoVariante = `@${pseudoEnMinuscules}`;
 			break;
 		case "instagram":
-			pseudoVariante = Math.random() < 0.5 ? randomItem(variations["instagram"]) : pseudoEnMinuscules;
+			pseudoVariante = Math.random() < 0.5 ? randomItem(variations.instagram) : pseudoEnMinuscules;
 			break;
 		case "facebook":
-			pseudoVariante = randomItem(variations["facebook"]);
+			pseudoVariante = randomItem(variations.facebook);
 			break;
 		case "linkedin":
-			pseudoVariante = randomItem(variations["linkedin"]);
+			pseudoVariante = randomItem(variations.linkedin);
 			break;
 		case "paypal":
-			pseudoVariante = randomItem(variations["paypal"]);
+			pseudoVariante = randomItem(variations.paypal);
 			break;
 		case "ebay":
-			pseudoVariante = randomItem(variations["ebay"]);
+			pseudoVariante = randomItem(variations.ebay);
 			break;
 		case "playstation":
-			pseudoVariante = randomItem(variations["playstation"]);
+			pseudoVariante = randomItem(variations.playstation);
 			break;
 		case "battlenet":
-			pseudoVariante = randomItem(variations["battlenet"]);
+			pseudoVariante = randomItem(variations.battlenet);
 			break;
 		case "bungiecord":
-			pseudoVariante = randomItem(variations["bungiecord"]);
+			pseudoVariante = randomItem(variations.bungiecord);
 			break;
 		case "reddit":
-			pseudoVariante = randomItem(variations["reddit"]);
+			pseudoVariante = randomItem(variations.reddit);
 			break;
 		case "steam":
-			pseudoVariante = randomItem(variations["steam"]);
+			pseudoVariante = randomItem(variations.steam);
 			break;
 		case "tiktok":
-			pseudoVariante = randomItem(variations["tiktok"]);
+			pseudoVariante = randomItem(variations.tiktok);
 			break;
 		case "xbox":
-			pseudoVariante = randomItem(variations["xbox"]);
+			pseudoVariante = randomItem(variations.xbox);
 			break;
 		case "crunchyroll":
-			pseudoVariante = randomItem(variations["crunchyroll"]);
+			pseudoVariante = randomItem(variations.crunchyroll);
 			break;
 		case "spotify":
-			pseudoVariante = randomItem(variations["spotify"]);
+			pseudoVariante = randomItem(variations.spotify);
 			break;
 		case "epicgames":
-			pseudoVariante = randomItem(variations["epicgames"]);
+			pseudoVariante = randomItem(variations.epicgames);
 			break;
 		case "github":
-			pseudoVariante = randomItem(variations["github"]);
+			pseudoVariante = randomItem(variations.github);
 			break;
 		case "riotgames":
-			pseudoVariante = randomItem(variations["riotgames"]);
+			pseudoVariante = randomItem(variations.riotgames);
 			break;
 		case "onlyfans":
-			pseudoVariante = randomItem(variations["onlyfans"]);
+			pseudoVariante = randomItem(variations.onlyfans);
 			break;
 		case "twitch":
-			pseudoVariante = randomItem(variations["twitch"]);
+			pseudoVariante = randomItem(variations.twitch);
 			break;
 		case "youtube":
 			pseudoVariante = generateYouTubeChannelID();
@@ -256,7 +256,7 @@ export function generateCreditCard(): CreditCardInfo {
 	const randomIssuerIndex = Math.floor(Math.random() * issuers.length);
 	issuer = issuers[randomIssuerIndex];
 
-	let firstDigits = Math.floor(Math.random() * 9) + 1 + "" + Math.floor(Math.random() * 10) + "" + Math.floor(Math.random() * 10);
+	let _firstDigits = `${Math.floor(Math.random() * 9) + 1}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}`;
 
 	expiryYear = new Date().getFullYear() + Math.floor(Math.random() * 5) + 1;
 
@@ -271,7 +271,7 @@ export function generateCreditCard(): CreditCardInfo {
 		case "American Express":
 			cardNumber.push(3);
 			cardNumber.push(4 + Math.floor(Math.random() * 4));
-			firstDigits += Math.floor(Math.random() * 10);
+			_firstDigits += Math.floor(Math.random() * 10);
 			break;
 		case "Discover":
 			cardNumber.push(6);
@@ -301,7 +301,7 @@ export function generateCreditCard(): CreditCardInfo {
 
 	const cardNumberStr = cardNumber.join("");
 
-	cvv = Math.floor(Math.random() * 9) + "" + Math.floor(Math.random() * 9) + "" + Math.floor(Math.random() * 9);
+	cvv = `${Math.floor(Math.random() * 9)}${Math.floor(Math.random() * 9)}${Math.floor(Math.random() * 9)}`;
 
 	expiryMonth = Math.floor(Math.random() * 12) + 1;
 

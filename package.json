@@ -11,11 +11,11 @@
     "publish:github": "npm publish --registry=https://npm.pkg.github.com/fox3000foxy",
     "publish:all": "npm run build && npm run publish:npm && npm run publish:github",
     "format": "bunx --bun @biomejs/biome format --write ./src",
-		"check": "bunx --bun @biomejs/biome check ./src",
-		"lint": "bunx --bun @biomejs/biome lint ./src",
-		"lint:write": "bunx --bun @biomejs/biome lint --write ./src",
-		"test": "bunx --bun @biomejs/biome test ./src",
-		"build": "tsc --project tsconfig.json"
+    "check": "bunx --bun @biomejs/biome check ./src",
+    "lint": "bunx --bun @biomejs/biome lint ./src",
+    "lint:write": "bunx --bun @biomejs/biome lint --write ./src",
+    "test": "bunx --bun @biomejs/biome test ./src",
+    "build": "tsc --project tsconfig.json"
   },
   "keywords": [
     "fake",
@@ -29,7 +29,7 @@
     "url": "git+https://github.com/fox3000foxy/FakeData-npm.git"
   },
   "devDependencies": {
-    "@types/node": "^25.3.3",
+    "@types/node": "^25.6.0",
     "typescript": "^5.0.0"
   },
   "jest": {
