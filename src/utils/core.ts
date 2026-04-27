@@ -1,276 +1,179 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 
-import { rawDatasets } from '../data.js';
-import type { CreditCardInfo, Preferences } from '../types';
+import { rawDatasets } from "../data.js";
+import type { CreditCardInfo, Preferences } from "../types";
 
 // helper utilities
 
 /** Return a random element from an array. */
 export function randomItem<T>(arr: T[]): T {
-    return arr[Math.floor(Math.random() * arr.length)];
+	return arr[Math.floor(Math.random() * arr.length)];
 }
 
 /** Shuffle the elements of an array in place (Fisher–Yates). */
 export function shuffleArray<T>(arr: T[]): T[] {
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-    return arr;
+	for (let i = arr.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[arr[i], arr[j]] = [arr[j], arr[i]];
+	}
+	return arr;
 }
 
 /** Generate a RFC4122 v4 random UUID string. */
 export function randomUUID(): string {
-    return crypto.randomUUID();
+	return crypto.randomUUID();
 }
 
 /** Generate a random password of given length composed of letters/numbers. */
 export function generatePassword(length: number = 12): string {
-    const chars =
-        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let pwd = '';
-    for (let i = 0; i < length; i++) {
-        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return pwd;
+	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	let pwd = "";
+	for (let i = 0; i < length; i++) {
+		pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+	}
+	return pwd;
 }
 
 /** Return a random Date between two given dates. */
 export function randomDateBetween(start: Date, end: Date): Date {
-    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+	return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
 
 export function generatePhoneNumber(countryCode: string): string {
-    const numeroAleatoire = Math.floor(Math.random() * 1000000000)
-        .toString()
-        .padStart(9, '0');
-    return `${countryCode}${numeroAleatoire}`;
+	const numeroAleatoire = Math.floor(Math.random() * 1000000000)
+		.toString()
+		.padStart(9, "0");
+	return `${countryCode}${numeroAleatoire}`;
 }
 
-export function generateSocialHandleVariant(
-    name: string,
-    surname: string,
-    pseudo: string,
-    mediaSocial: string
-): string {
-    if (!(name && surname && pseudo && mediaSocial)) {
-        throw new Error('Missing parameters');
-    }
+export function generateSocialHandleVariant(name: string, surname: string, pseudo: string, mediaSocial: string): string {
+	if (!(name && surname && pseudo && mediaSocial)) {
+		throw new Error("Missing parameters");
+	}
 
-    const pseudoEnMinuscules = pseudo.toLowerCase();
-    const nameEnMinuscules = name.toLowerCase();
-    const surnameEnMinuscules = surname.toLowerCase();
-    const numeroRandom = Math.floor(Math.random() * 100);
-    const chiffresSuite = generateRandomDigits(5);
+	const pseudoEnMinuscules = pseudo.toLowerCase();
+	const nameEnMinuscules = name.toLowerCase();
+	const surnameEnMinuscules = surname.toLowerCase();
+	const numeroRandom = Math.floor(Math.random() * 100);
+	const chiffresSuite = generateRandomDigits(5);
 
-    const variations: Record<string, string[]> = {
-        instagram: [
-            `${pseudo}_official`,
-            `${pseudo}_real`,
-            `${pseudo}_original`,
-            `${pseudo}_insta`,
-            `${pseudo}_gram`,
-            `${pseudo}_ig`,
-        ],
-        facebook: [
-            `${name}.${surname}.${numeroRandom}`,
-            `${name}${surname}${numeroRandom}`,
-            `${name}-${surname}-${numeroRandom}`,
-            `${name}.${surname}${numeroRandom}`,
-            `${name}${surname}_${numeroRandom}`,
-            `${pseudo}${numeroRandom}`,
-        ],
-        linkedin: [
-            `${name}-${surname}-a${chiffresSuite}`,
-            `${name}.${surname}.a${chiffresSuite}`,
-            `${name}${surname}a${chiffresSuite}`,
-            `${name}-${surname}${chiffresSuite}`,
-            `${name}.${surname}${chiffresSuite}`,
-            `${name}${surname}${chiffresSuite}`,
-        ],
-        twitter: [
-            `@${pseudoEnMinuscules}`,
-            `@${pseudoEnMinuscules}_official`,
-            `@${pseudoEnMinuscules}Official`,
-            `@${pseudoEnMinuscules}Real`,
-            `@${pseudoEnMinuscules}OfficialAccount`,
-            `@${pseudoEnMinuscules}Fan`,
-        ],
-        paypal: [
-            `${pseudoEnMinuscules}@paypal`,
-            `${pseudoEnMinuscules}_paypal`,
-            `paypal_${pseudo}`,
-            `paypal.${pseudoEnMinuscules}`,
-        ],
-        ebay: [
-            `ebay_${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_ebay`,
-            `ebay${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_store`,
-            `ebaystore_${pseudoEnMinuscules}`,
-        ],
-        playstation: [
-            `${pseudoEnMinuscules}_PSN`,
-            `${pseudoEnMinuscules}_PlayStation`,
-            `${pseudoEnMinuscules}PS`,
-        ],
-        battlenet: [
-            `${pseudoEnMinuscules}#${Math.floor(9999 * Math.random())}`,
-            `${pseudoEnMinuscules}#${Math.floor(9999 * Math.random())}_${surnameEnMinuscules}`,
-        ],
-        bungiecord: [
-            `${pseudoEnMinuscules}#0000`,
-            `${pseudoEnMinuscules}#0001`,
-            `${pseudoEnMinuscules}#0002`,
-        ],
-        reddit: [
-            `u/${pseudoEnMinuscules}`,
-            `user_${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_reddit`,
-            `reddit_${pseudoEnMinuscules}`,
-        ],
-        steam: [
-            `steamcommunity.com/id/${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_steam`,
-            `steam_${pseudoEnMinuscules}`,
-            `steam_${pseudoEnMinuscules}_id`,
-        ],
-        tiktok: [
-            `@${pseudoEnMinuscules}_tiktok`,
-            `tiktok_${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_tiktok`,
-        ],
-        xbox: [
-            `xbox_${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_xbox`,
-            `${pseudoEnMinuscules}_x`,
-        ],
-        crunchyroll: [
-            `crunchy_${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_crunchy`,
-            `crunchy_${pseudoEnMinuscules}_anime`,
-        ],
-        spotify: [
-            `spotify_${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_spotify`,
-            `music_${pseudoEnMinuscules}`,
-        ],
-        epicgames: [
-            `epic_${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_epic`,
-            `epicgames_${pseudoEnMinuscules}`,
-        ],
-        github: [
-            `${pseudoEnMinuscules}_github`,
-            `${pseudoEnMinuscules}-dev`,
-            `git_${pseudoEnMinuscules}`,
-            `github.com/${pseudoEnMinuscules}`,
-        ],
-        riotgames: [
-            `${pseudoEnMinuscules}_riot`,
-            `${pseudoEnMinuscules}_games`,
-            `riot_${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_gg`,
-        ],
-        leagueoflegends: [
-            `${pseudoEnMinuscules}_lol`,
-            `${pseudoEnMinuscules}_league`,
-            `${pseudoEnMinuscules}_legends`,
-        ],
-        twitch: [
-            `${pseudoEnMinuscules}_stream`,
-            `${pseudoEnMinuscules}TV`,
-            `${pseudoEnMinuscules}_twitch`,
-            `twitch_${pseudoEnMinuscules}`,
-        ],
-        youtube: [
-            `${pseudoEnMinuscules}_YT`,
-            `youtube.com/user/${pseudoEnMinuscules}`,
-            `yt_${pseudoEnMinuscules}`,
-            `${pseudoEnMinuscules}_tube`,
-        ],
-        onlyfans: [
-            `${pseudoEnMinuscules}_fans`,
-            `${pseudoEnMinuscules}_exclusive`,
-            `${pseudoEnMinuscules}_content`,
-            `only_${pseudoEnMinuscules}`,
-        ],
-    };
+	const variations: Record<string, string[]> = {
+		instagram: [`${pseudo}_official`, `${pseudo}_real`, `${pseudo}_original`, `${pseudo}_insta`, `${pseudo}_gram`, `${pseudo}_ig`],
+		facebook: [
+			`${name}.${surname}.${numeroRandom}`,
+			`${name}${surname}${numeroRandom}`,
+			`${name}-${surname}-${numeroRandom}`,
+			`${name}.${surname}${numeroRandom}`,
+			`${name}${surname}_${numeroRandom}`,
+			`${pseudo}${numeroRandom}`,
+		],
+		linkedin: [
+			`${name}-${surname}-a${chiffresSuite}`,
+			`${name}.${surname}.a${chiffresSuite}`,
+			`${name}${surname}a${chiffresSuite}`,
+			`${name}-${surname}${chiffresSuite}`,
+			`${name}.${surname}${chiffresSuite}`,
+			`${name}${surname}${chiffresSuite}`,
+		],
+		twitter: [
+			`@${pseudoEnMinuscules}`,
+			`@${pseudoEnMinuscules}_official`,
+			`@${pseudoEnMinuscules}Official`,
+			`@${pseudoEnMinuscules}Real`,
+			`@${pseudoEnMinuscules}OfficialAccount`,
+			`@${pseudoEnMinuscules}Fan`,
+		],
+		paypal: [`${pseudoEnMinuscules}@paypal`, `${pseudoEnMinuscules}_paypal`, `paypal_${pseudo}`, `paypal.${pseudoEnMinuscules}`],
+		ebay: [`ebay_${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_ebay`, `ebay${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_store`, `ebaystore_${pseudoEnMinuscules}`],
+		playstation: [`${pseudoEnMinuscules}_PSN`, `${pseudoEnMinuscules}_PlayStation`, `${pseudoEnMinuscules}PS`],
+		battlenet: [`${pseudoEnMinuscules}#${Math.floor(9999 * Math.random())}`, `${pseudoEnMinuscules}#${Math.floor(9999 * Math.random())}_${surnameEnMinuscules}`],
+		bungiecord: [`${pseudoEnMinuscules}#0000`, `${pseudoEnMinuscules}#0001`, `${pseudoEnMinuscules}#0002`],
+		reddit: [`u/${pseudoEnMinuscules}`, `user_${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_reddit`, `reddit_${pseudoEnMinuscules}`],
+		steam: [`steamcommunity.com/id/${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_steam`, `steam_${pseudoEnMinuscules}`, `steam_${pseudoEnMinuscules}_id`],
+		tiktok: [`@${pseudoEnMinuscules}_tiktok`, `tiktok_${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_tiktok`],
+		xbox: [`xbox_${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_xbox`, `${pseudoEnMinuscules}_x`],
+		crunchyroll: [`crunchy_${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_crunchy`, `crunchy_${pseudoEnMinuscules}_anime`],
+		spotify: [`spotify_${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_spotify`, `music_${pseudoEnMinuscules}`],
+		epicgames: [`epic_${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_epic`, `epicgames_${pseudoEnMinuscules}`],
+		github: [`${pseudoEnMinuscules}_github`, `${pseudoEnMinuscules}-dev`, `git_${pseudoEnMinuscules}`, `github.com/${pseudoEnMinuscules}`],
+		riotgames: [`${pseudoEnMinuscules}_riot`, `${pseudoEnMinuscules}_games`, `riot_${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_gg`],
+		leagueoflegends: [`${pseudoEnMinuscules}_lol`, `${pseudoEnMinuscules}_league`, `${pseudoEnMinuscules}_legends`],
+		twitch: [`${pseudoEnMinuscules}_stream`, `${pseudoEnMinuscules}TV`, `${pseudoEnMinuscules}_twitch`, `twitch_${pseudoEnMinuscules}`],
+		youtube: [`${pseudoEnMinuscules}_YT`, `youtube.com/user/${pseudoEnMinuscules}`, `yt_${pseudoEnMinuscules}`, `${pseudoEnMinuscules}_tube`],
+		onlyfans: [`${pseudoEnMinuscules}_fans`, `${pseudoEnMinuscules}_exclusive`, `${pseudoEnMinuscules}_content`, `only_${pseudoEnMinuscules}`],
+	};
 
-    let pseudoVariante = pseudoEnMinuscules;
-    switch (mediaSocial.toLowerCase()) {
-        case 'twitter':
-            pseudoVariante = `@${pseudoEnMinuscules}`;
-            break;
-        case 'instagram':
-            pseudoVariante =
-                Math.random() < 0.5
-                    ? randomItem(variations['instagram'])
-                    : pseudoEnMinuscules;
-            break;
-        case 'facebook':
-            pseudoVariante = randomItem(variations['facebook']);
-            break;
-        case 'linkedin':
-            pseudoVariante = randomItem(variations['linkedin']);
-            break;
-        case 'paypal':
-            pseudoVariante = randomItem(variations['paypal']);
-            break;
-        case 'ebay':
-            pseudoVariante = randomItem(variations['ebay']);
-            break;
-        case 'playstation':
-            pseudoVariante = randomItem(variations['playstation']);
-            break;
-        case 'battlenet':
-            pseudoVariante = randomItem(variations['battlenet']);
-            break;
-        case 'bungiecord':
-            pseudoVariante = randomItem(variations['bungiecord']);
-            break;
-        case 'reddit':
-            pseudoVariante = randomItem(variations['reddit']);
-            break;
-        case 'steam':
-            pseudoVariante = randomItem(variations['steam']);
-            break;
-        case 'tiktok':
-            pseudoVariante = randomItem(variations['tiktok']);
-            break;
-        case 'xbox':
-            pseudoVariante = randomItem(variations['xbox']);
-            break;
-        case 'crunchyroll':
-            pseudoVariante = randomItem(variations['crunchyroll']);
-            break;
-        case 'spotify':
-            pseudoVariante = randomItem(variations['spotify']);
-            break;
-        case 'epicgames':
-            pseudoVariante = randomItem(variations['epicgames']);
-            break;
-        case 'github':
-            pseudoVariante = randomItem(variations['github']);
-            break;
-        case 'riotgames':
-            pseudoVariante = randomItem(variations['riotgames']);
-            break;
-        case 'onlyfans':
-            pseudoVariante = randomItem(variations['onlyfans']);
-            break;
-        case 'twitch':
-            pseudoVariante = randomItem(variations['twitch']);
-            break;
-        case 'youtube':
-            pseudoVariante = generateYouTubeChannelID();
-            break;
-        default:
-            pseudoVariante = pseudoEnMinuscules;
-            break;
-    }
+	let pseudoVariante = pseudoEnMinuscules;
+	switch (mediaSocial.toLowerCase()) {
+		case "twitter":
+			pseudoVariante = `@${pseudoEnMinuscules}`;
+			break;
+		case "instagram":
+			pseudoVariante = Math.random() < 0.5 ? randomItem(variations["instagram"]) : pseudoEnMinuscules;
+			break;
+		case "facebook":
+			pseudoVariante = randomItem(variations["facebook"]);
+			break;
+		case "linkedin":
+			pseudoVariante = randomItem(variations["linkedin"]);
+			break;
+		case "paypal":
+			pseudoVariante = randomItem(variations["paypal"]);
+			break;
+		case "ebay":
+			pseudoVariante = randomItem(variations["ebay"]);
+			break;
+		case "playstation":
+			pseudoVariante = randomItem(variations["playstation"]);
+			break;
+		case "battlenet":
+			pseudoVariante = randomItem(variations["battlenet"]);
+			break;
+		case "bungiecord":
+			pseudoVariante = randomItem(variations["bungiecord"]);
+			break;
+		case "reddit":
+			pseudoVariante = randomItem(variations["reddit"]);
+			break;
+		case "steam":
+			pseudoVariante = randomItem(variations["steam"]);
+			break;
+		case "tiktok":
+			pseudoVariante = randomItem(variations["tiktok"]);
+			break;
+		case "xbox":
+			pseudoVariante = randomItem(variations["xbox"]);
+			break;
+		case "crunchyroll":
+			pseudoVariante = randomItem(variations["crunchyroll"]);
+			break;
+		case "spotify":
+			pseudoVariante = randomItem(variations["spotify"]);
+			break;
+		case "epicgames":
+			pseudoVariante = randomItem(variations["epicgames"]);
+			break;
+		case "github":
+			pseudoVariante = randomItem(variations["github"]);
+			break;
+		case "riotgames":
+			pseudoVariante = randomItem(variations["riotgames"]);
+			break;
+		case "onlyfans":
+			pseudoVariante = randomItem(variations["onlyfans"]);
+			break;
+		case "twitch":
+			pseudoVariante = randomItem(variations["twitch"]);
+			break;
+		case "youtube":
+			pseudoVariante = generateYouTubeChannelID();
+			break;
+		default:
+			pseudoVariante = pseudoEnMinuscules;
+			break;
+	}
 
-    return pseudoVariante;
+	return pseudoVariante;
 }
 
 /**
@@ -279,11 +182,11 @@ export function generateSocialHandleVariant(
  * @returns {string}
  */
 export function generateRandomDigits(length: number): string {
-    let chiffres = '';
-    for (let i = 0; i < length; i++) {
-        chiffres += Math.floor(Math.random() * 10);
-    }
-    return chiffres;
+	let chiffres = "";
+	for (let i = 0; i < length; i++) {
+		chiffres += Math.floor(Math.random() * 10);
+	}
+	return chiffres;
 }
 
 /**
@@ -294,225 +197,195 @@ export function generateRandomDigits(length: number): string {
  * @param {string} countryCode
  * @returns {string}
  */
-export function buildCredibleEmailAddress(
-    firstName: string,
-    lastName: string,
-    countryCode: string
-): string {
-    const domaines: any = (rawDatasets as any).mailboxes;
+export function buildCredibleEmailAddress(firstName: string, lastName: string, countryCode: string): string {
+	const domaines: any = (rawDatasets as any).mailboxes;
 
-    if (firstName && lastName) {
-        const firstLower = firstName.toLowerCase();
-        const lastLower = lastName.toLowerCase();
+	if (firstName && lastName) {
+		const firstLower = firstName.toLowerCase();
+		const lastLower = lastName.toLowerCase();
 
-        const domaineAleatoire = randomItem(domaines[countryCode]);
-        const choixVariante = Math.floor(Math.random() * 10);
+		const domaineAleatoire = randomItem(domaines[countryCode]);
+		const choixVariante = Math.floor(Math.random() * 10);
 
-        let adresseEmail = '';
+		let adresseEmail = "";
 
-        switch (choixVariante) {
-            case 0:
-                adresseEmail = `${firstLower}.${lastLower}@${domaineAleatoire}`;
-                break;
-            case 1:
-                adresseEmail = `${firstLower}${lastLower}@${domaineAleatoire}`;
-                break;
-            case 2:
-                adresseEmail = `${lastLower}.${firstLower}@${domaineAleatoire}`;
-                break;
-            case 3:
-                adresseEmail = `${lastLower}${firstLower}@${domaineAleatoire}`;
-                break;
-            case 4:
-            case 5:
-                adresseEmail = `${firstLower.charAt(0)}${lastLower}@${domaineAleatoire}`;
-                break;
-            case 6:
-            case 7:
-                adresseEmail = `${firstLower}_${lastLower}@${domaineAleatoire}`;
-                break;
-            case 8:
-                adresseEmail = `${firstLower}.${lastLower}${generateRandomDigits(
-                    3
-                )}@${domaineAleatoire}`;
-                break;
-            case 9:
-                adresseEmail = `${lastLower}${firstLower}${generateRandomDigits(
-                    3
-                )}@${domaineAleatoire}`;
-                break;
-        }
+		switch (choixVariante) {
+			case 0:
+				adresseEmail = `${firstLower}.${lastLower}@${domaineAleatoire}`;
+				break;
+			case 1:
+				adresseEmail = `${firstLower}${lastLower}@${domaineAleatoire}`;
+				break;
+			case 2:
+				adresseEmail = `${lastLower}.${firstLower}@${domaineAleatoire}`;
+				break;
+			case 3:
+				adresseEmail = `${lastLower}${firstLower}@${domaineAleatoire}`;
+				break;
+			case 4:
+			case 5:
+				adresseEmail = `${firstLower.charAt(0)}${lastLower}@${domaineAleatoire}`;
+				break;
+			case 6:
+			case 7:
+				adresseEmail = `${firstLower}_${lastLower}@${domaineAleatoire}`;
+				break;
+			case 8:
+				adresseEmail = `${firstLower}.${lastLower}${generateRandomDigits(3)}@${domaineAleatoire}`;
+				break;
+			case 9:
+				adresseEmail = `${lastLower}${firstLower}${generateRandomDigits(3)}@${domaineAleatoire}`;
+				break;
+		}
 
-        return adresseEmail;
-    } else {
-        throw new Error('Missing first name or last name');
-    }
+		return adresseEmail;
+	} else {
+		throw new Error("Missing first name or last name");
+	}
 }
 
 export function generateCreditCard(): CreditCardInfo {
-    const cardNumber: number[] = [];
-    let checksum = 0;
-    let issuer: string;
-    let expiryMonth: number;
-    let expiryYear: number;
-    let cvv: string;
+	const cardNumber: number[] = [];
+	let checksum = 0;
+	let issuer: string;
+	let expiryMonth: number;
+	let expiryYear: number;
+	let cvv: string;
 
-    const issuers = ['Mastercard', 'Visa', 'American Express', 'Discover'];
-    const randomIssuerIndex = Math.floor(Math.random() * issuers.length);
-    issuer = issuers[randomIssuerIndex];
+	const issuers = ["Mastercard", "Visa", "American Express", "Discover"];
+	const randomIssuerIndex = Math.floor(Math.random() * issuers.length);
+	issuer = issuers[randomIssuerIndex];
 
-    let firstDigits =
-        (Math.floor(Math.random() * 9) + 1) +
-        '' +
-        (Math.floor(Math.random() * 10)) +
-        '' +
-        (Math.floor(Math.random() * 10));
+	let firstDigits = Math.floor(Math.random() * 9) + 1 + "" + Math.floor(Math.random() * 10) + "" + Math.floor(Math.random() * 10);
 
-    expiryYear = new Date().getFullYear() + Math.floor(Math.random() * 5) + 1;
+	expiryYear = new Date().getFullYear() + Math.floor(Math.random() * 5) + 1;
 
-    switch (issuer) {
-        case 'Visa':
-            cardNumber.push(4);
-            break;
-        case 'Mastercard':
-            cardNumber.push(5);
-            cardNumber.push(1 + Math.floor(Math.random() * 5));
-            break;
-        case 'American Express':
-            cardNumber.push(3);
-            cardNumber.push(4 + Math.floor(Math.random() * 4));
-            firstDigits += Math.floor(Math.random() * 10);
-            break;
-        case 'Discover':
-            cardNumber.push(6);
-            cardNumber.push(0);
-            cardNumber.push(1);
-            cardNumber.push(1);
-            break;
-    }
+	switch (issuer) {
+		case "Visa":
+			cardNumber.push(4);
+			break;
+		case "Mastercard":
+			cardNumber.push(5);
+			cardNumber.push(1 + Math.floor(Math.random() * 5));
+			break;
+		case "American Express":
+			cardNumber.push(3);
+			cardNumber.push(4 + Math.floor(Math.random() * 4));
+			firstDigits += Math.floor(Math.random() * 10);
+			break;
+		case "Discover":
+			cardNumber.push(6);
+			cardNumber.push(0);
+			cardNumber.push(1);
+			cardNumber.push(1);
+			break;
+	}
 
-    const cardLength = issuer === 'American Express' ? 15 : 16;
-    for (let i = cardNumber.length; i < cardLength - 1; i++) {
-        cardNumber.push(Math.floor(Math.random() * 10));
-    }
+	const cardLength = issuer === "American Express" ? 15 : 16;
+	for (let i = cardNumber.length; i < cardLength - 1; i++) {
+		cardNumber.push(Math.floor(Math.random() * 10));
+	}
 
-    for (let i = 0; i < cardLength - 1; i++) {
-        let digit = cardNumber[i];
-        if ((i + 1) % 2 === cardLength % 2) {
-            digit *= 2;
-            if (digit > 9) {
-                digit -= 9;
-            }
-        }
-        checksum += digit;
-    }
-    const checksumDigit = (10 - (checksum % 10)) % 10;
-    cardNumber.push(checksumDigit);
+	for (let i = 0; i < cardLength - 1; i++) {
+		let digit = cardNumber[i];
+		if ((i + 1) % 2 === cardLength % 2) {
+			digit *= 2;
+			if (digit > 9) {
+				digit -= 9;
+			}
+		}
+		checksum += digit;
+	}
+	const checksumDigit = (10 - (checksum % 10)) % 10;
+	cardNumber.push(checksumDigit);
 
-    const cardNumberStr = cardNumber.join('');
+	const cardNumberStr = cardNumber.join("");
 
-    cvv =
-        Math.floor(Math.random() * 9) +
-        '' +
-        Math.floor(Math.random() * 9) +
-        '' +
-        Math.floor(Math.random() * 9);
+	cvv = Math.floor(Math.random() * 9) + "" + Math.floor(Math.random() * 9) + "" + Math.floor(Math.random() * 9);
 
-    expiryMonth = Math.floor(Math.random() * 12) + 1;
+	expiryMonth = Math.floor(Math.random() * 12) + 1;
 
-    return {
-        cc: cardNumberStr,
-        cvv,
-        issuer,
-        expiration_year: expiryYear,
-        expiration_month: expiryMonth,
-        number: cardNumberStr,
-    };
+	return {
+		cc: cardNumberStr,
+		cvv,
+		issuer,
+		expiration_year: expiryYear,
+		expiration_month: expiryMonth,
+		number: cardNumberStr,
+	};
 }
 
 export function getRandomUsername(): string {
-    if (usernames.length === 0) usernames = [...usernamesTemplate];
-    const usernameIndex = Math.floor(Math.random() * usernames.length);
-    const username = usernames[usernameIndex];
-    return username;
+	if (usernames.length === 0) usernames = [...usernamesTemplate];
+	const usernameIndex = Math.floor(Math.random() * usernames.length);
+	const username = usernames[usernameIndex];
+	return username;
 }
 
 const usernamesTemplate: string[] = (rawDatasets as any).usernames;
 let usernames: string[] = [...usernamesTemplate];
 
 export function generateRandomDate(): Date {
-    const dateActuelle = new Date();
-    const dateIlYa13Ans = new Date(dateActuelle);
-    dateIlYa13Ans.setFullYear(dateIlYa13Ans.getFullYear() - 19);
-    const dateIlYa30Ans = new Date(dateActuelle);
-    dateIlYa30Ans.setFullYear(dateIlYa30Ans.getFullYear() - 80);
-    const dateAleatoire = new Date(
-        dateIlYa13Ans.getTime() +
-        Math.random() * (dateIlYa30Ans.getTime() - dateIlYa13Ans.getTime())
-    );
-    return dateAleatoire;
+	const dateActuelle = new Date();
+	const dateIlYa13Ans = new Date(dateActuelle);
+	dateIlYa13Ans.setFullYear(dateIlYa13Ans.getFullYear() - 19);
+	const dateIlYa30Ans = new Date(dateActuelle);
+	dateIlYa30Ans.setFullYear(dateIlYa30Ans.getFullYear() - 80);
+	const dateAleatoire = new Date(dateIlYa13Ans.getTime() + Math.random() * (dateIlYa30Ans.getTime() - dateIlYa13Ans.getTime()));
+	return dateAleatoire;
 }
 
 export function getAge(birthDate: Date): number {
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    return age;
+	const today = new Date();
+	let age = today.getFullYear() - birthDate.getFullYear();
+	const m = today.getMonth() - birthDate.getMonth();
+	if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+		age--;
+	}
+	return age;
 }
 
 // continent lookup helper relies on data module
-import { continentsCountries } from '../data.js';
+import { continentsCountries } from "../data.js";
 
 export function getContinent(countryCode: string): string {
-    for (const continent in continentsCountries) {
-        if (continentsCountries[continent].includes(countryCode)) {
-            return continent;
-        }
-    }
-    return 'Unknown';
+	for (const continent in continentsCountries) {
+		if (continentsCountries[continent].includes(countryCode)) {
+			return continent;
+		}
+	}
+	return "Unknown";
 }
 
-export function generatePreferences(categories: any[], gender: 'Male' | 'Female'): Preferences {
-    categories.forEach((categorie) => {
-        const categorieName = Object.keys(categorie)[0];
-        const coef = Math.random() * 1 + 0.5;
-        categorie[categorieName][gender] *= coef;
-    });
+export function generatePreferences(categories: any[], gender: "Male" | "Female"): Preferences {
+	categories.forEach((categorie) => {
+		const categorieName = Object.keys(categorie)[0];
+		const coef = Math.random() * 1 + 0.5;
+		categorie[categorieName][gender] *= coef;
+	});
 
-    categories.sort(
-        (a, b) =>
-            b[Object.keys(b)[0]][gender] - a[Object.keys(a)[0]][gender]
-    );
-    const categoriesSelectionnees = categories.slice(
-        0,
-        Math.floor(Math.random() * 6) + 15
-    );
+	categories.sort((a, b) => b[Object.keys(b)[0]][gender] - a[Object.keys(a)[0]][gender]);
+	const categoriesSelectionnees = categories.slice(0, Math.floor(Math.random() * 6) + 15);
 
-    const preferences: any = {};
-    categoriesSelectionnees.forEach((categorie) => {
-        const categorieName = Object.keys(categorie)[0];
-        const score = categorie[categorieName][gender];
-        preferences[categorieName] = score;
-    });
-    return preferences;
+	const preferences: any = {};
+	categoriesSelectionnees.forEach((categorie) => {
+		const categorieName = Object.keys(categorie)[0];
+		const score = categorie[categorieName][gender];
+		preferences[categorieName] = score;
+	});
+	return preferences;
 }
 
 export function generateYouTubeChannelID(): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
-    const length = 22;
-    let channelID = 'UC';
-    for (let i = 0; i < length; i++) {
-        channelID += characters.charAt(
-            Math.floor(Math.random() * characters.length)
-        );
-    }
-    return channelID;
+	const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+	const length = 22;
+	let channelID = "UC";
+	for (let i = 0; i < length; i++) {
+		channelID += characters.charAt(Math.floor(Math.random() * characters.length));
+	}
+	return channelID;
 }
 
 export function range(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min)) + min;
+	return Math.floor(Math.random() * (max - min)) + min;
 }
-
