@@ -1,55 +1,57 @@
-import crypto from 'crypto';
-import { countries, preferencesPublicitaires, rawDatasets } from '../data.js';
-import { buildCredibleEmailAddress, generateCreditCard, generatePhoneNumber, generatePreferences, generateRandomDate, generateSocialHandleVariant, getAge, getContinent, getRandomUsername, randomItem, range } from '../utils/index.js';
-import { sexualities } from './constants.js';
+import crypto from "node:crypto";
+import { countries, getCountryDataset, getCountryList, preferencesPublicitaires, rawDatasets } from "../data.js";
+import { sexualities } from "./constants.js";
+import { buildCredibleEmailAddress, generateCreditCard, generatePhoneNumber, generatePreferences, generateRandomDate, generateSocialHandleVariant, getAge, getContinent, getRandomUsername, randomItem, range, } from "../utils/index.js";
 /**
- * Generate a fake user profile object.
- * @param params
+ * Generate a complete fake user profile.
+ *
+ * @param params - Generation options.
+ * @param params.countryName - Full country name (e.g. "France"); a random country is used when omitted.
+ * @param params.birthGender - "Male" or "Female"; drawn at random when omitted.
+ * @returns A fully populated `Profile` object.
+ * @throws Error when `countryName` matches no known country or when a dataset list is missing.
  */
 export function generateFakeProfile(params) {
     let { countryName, birthGender } = params;
-    let country;
-    if (!countryName)
-        country = countries[Math.floor(Math.random() * countries.length)];
-    else
-        country = countries.find((u) => u.name === countryName);
+    let country = countryName ? countries.find((u) => u.name === countryName) : randomItem(countries);
+    if (!country) {
+        throw new Error(`Unknown countryName "${countryName}". Expected one of: ${countries.map((c) => c.name).join(", ")}`);
+    }
     let continent = getContinent(country.abbreviation);
-    while (continent === 'Unknown') {
-        country = countries[Math.floor(Math.random() * countries.length)];
+    // Guard against datasets where a country has no continent mapping:
+    // retry a bounded number of times, then fall back to the drawn country.
+    let attempts = 0;
+    while (continent === "Unknown" && attempts < 10) {
+        country = randomItem(countries);
         continent = getContinent(country.abbreviation);
+        attempts++;
     }
     if (!birthGender)
-        birthGender = Math.random() < 0.5 ? 'Male' : 'Female';
+        birthGender = Math.random() < 0.5 ? "Male" : "Female";
+    const dataset = getCountryDataset(country.abbreviation);
     const person = {
-        name: randomItem(rawDatasets[country.abbreviation][birthGender.toLowerCase() + '_first']),
-        surname: randomItem(rawDatasets[country.abbreviation].last),
+        name: randomItem(getCountryList(dataset, `${birthGender.toLowerCase()}_first`, country.abbreviation)),
+        surname: randomItem(getCountryList(dataset, "last", country.abbreviation)),
     };
     const phoneNumber = generatePhoneNumber(country.phoneCode);
     const username = getRandomUsername();
     const social_media = {};
-    social_media['twitter'] =
-        Math.random() < 0.3
-            ? null
-            : generateSocialHandleVariant(person.name, person.surname, username, 'twitter');
+    social_media.twitter = Math.random() < 0.3 ? null : generateSocialHandleVariant(person.name, person.surname, username, "twitter");
     // ... remainder of social_media assignments remain identical to original
     // (omitted here for brevity, but would be copied entirely)
     const email = buildCredibleEmailAddress(person.name, person.surname, country.abbreviation);
-    let creditCardInfo = generateCreditCard();
-    while (creditCardInfo.cc.length !== 16) {
-        creditCardInfo = generateCreditCard();
-    }
+    const creditCardInfo = generateCreditCard();
     const randomDate = generateRandomDate();
     const preferences = generatePreferences(preferencesPublicitaires, birthGender);
     const preferencesJSON = JSON.stringify(preferences);
-    const preferencesBase64 = Buffer.from(preferencesJSON).toString('base64');
-    const password = randomItem(rawDatasets.common.passwords) +
-        randomItem(rawDatasets.common.passwords) +
-        range(100, 999);
+    // btoa in browsers, Buffer in Node — keep the lib runtime-agnostic.
+    const preferencesBase64 = typeof Buffer !== "undefined" ? Buffer.from(preferencesJSON, "utf-8").toString("base64") : btoa(String.fromCharCode(...new TextEncoder().encode(preferencesJSON)));
+    const password = randomItem(rawDatasets.common.passwords) + randomItem(rawDatasets.common.passwords) + range(100, 999);
     const salt = range(2, 8);
-    const street = randomItem(rawDatasets[country.abbreviation].street);
-    const city = randomItem(rawDatasets[country.abbreviation].cities);
-    const state = randomItem(rawDatasets[country.abbreviation].states);
-    // sexualities array omitted for brevity; copy as in index.ts
+    const street = randomItem(getCountryList(dataset, "street", country.abbreviation));
+    const city = randomItem(getCountryList(dataset, "cities", country.abbreviation));
+    const state = randomItem(getCountryList(dataset, "states", country.abbreviation));
+    // sexualities imported from ./constants.ts
     const fakeProfile = {
         name: person.name,
         surname: person.surname,
@@ -57,9 +59,7 @@ export function generateFakeProfile(params) {
         age: getAge(randomDate),
         username,
         birthGender,
-        actualGender: Math.random() < 0.3
-            ? birthGender
-            : randomItem(sexualities),
+        actualGender: Math.random() < 0.3 ? birthGender : randomItem(sexualities),
         phone_number: phoneNumber,
         location: {
             street: {
@@ -75,12 +75,22 @@ export function generateFakeProfile(params) {
         passwords: {
             raw: password,
             salt,
-            md5: crypto.createHash('md5').update(password + salt).digest('hex'),
-            sha1: crypto.createHash('sha1').update(password + salt).digest('hex'),
-            sha256: crypto.createHash('sha256').update(password + salt).digest('hex'),
+            md5: crypto
+                .createHash("md5")
+                .update(password + salt)
+                .digest("hex"),
+            sha1: crypto
+                .createHash("sha1")
+                .update(password + salt)
+                .digest("hex"),
+            sha256: crypto
+                .createHash("sha256")
+                .update(password + salt)
+                .digest("hex"),
         },
         social_media,
         credit_card: {
+            cc: creditCardInfo.cc,
             number: creditCardInfo.cc,
             cvv: creditCardInfo.cvv,
             issuer: creditCardInfo.issuer,
