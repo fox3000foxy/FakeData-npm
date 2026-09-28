@@ -15,7 +15,9 @@ export function randomItem<T>(arr: T[]): T {
 export function shuffleArray<T>(arr: T[]): T[] {
 	for (let i = arr.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1)) as number;
-		[arr[i], arr[j]] = [arr[j], arr[i]];
+		const tmp = arr[i] as T;
+		arr[i] = arr[j] as T;
+		arr[j] = tmp;
 	}
 	return arr;
 }
@@ -104,69 +106,74 @@ export function generateSocialHandleVariant(name: string, surname: string, pseud
 	};
 
 	let pseudoVariante = pseudoEnMinuscules;
+	const pickVariant = (key: string): string => {
+		const list = variations[key];
+		if (!list) throw new Error(`Unknown social media "${key}"`);
+		return randomItem(list);
+	};
 	switch (mediaSocial.toLowerCase()) {
 		case "twitter":
-			pseudoVariante = randomItem(variations.twitter);
+			pseudoVariante = pickVariant("twitter");
 			break;
 		case "instagram":
-			pseudoVariante = Math.random() < 0.5 ? randomItem(variations.instagram) : pseudoEnMinuscules;
+			pseudoVariante = Math.random() < 0.5 ? pickVariant("instagram") : pseudoEnMinuscules;
 			break;
 		case "facebook":
-			pseudoVariante = randomItem(variations.facebook);
+			pseudoVariante = pickVariant("facebook");
 			break;
 		case "linkedin":
-			pseudoVariante = randomItem(variations.linkedin);
+			pseudoVariante = pickVariant("linkedin");
 			break;
 		case "paypal":
-			pseudoVariante = randomItem(variations.paypal);
+			pseudoVariante = pickVariant("paypal");
 			break;
 		case "ebay":
-			pseudoVariante = randomItem(variations.ebay);
+			pseudoVariante = pickVariant("ebay");
 			break;
 		case "playstation":
-			pseudoVariante = randomItem(variations.playstation);
+			pseudoVariante = pickVariant("playstation");
 			break;
 		case "battlenet":
-			pseudoVariante = randomItem(variations.battlenet);
+			pseudoVariante = pickVariant("battlenet");
 			break;
 		case "bungiecord":
-			pseudoVariante = randomItem(variations.bungiecord);
+			pseudoVariante = pickVariant("bungiecord");
 			break;
 		case "reddit":
-			pseudoVariante = randomItem(variations.reddit);
+			pseudoVariante = pickVariant("reddit");
 			break;
 		case "steam":
-			pseudoVariante = randomItem(variations.steam);
+			pseudoVariante = pickVariant("steam");
 			break;
 		case "tiktok":
-			pseudoVariante = randomItem(variations.tiktok);
+			pseudoVariante = pickVariant("tiktok");
 			break;
 		case "xbox":
-			pseudoVariante = randomItem(variations.xbox);
+			pseudoVariante = pickVariant("xbox");
 			break;
 		case "crunchyroll":
-			pseudoVariante = randomItem(variations.crunchyroll);
+			pseudoVariante = pickVariant("crunchyroll");
 			break;
 		case "spotify":
-			pseudoVariante = randomItem(variations.spotify);
+			pseudoVariante = pickVariant("spotify");
 			break;
 		case "epicgames":
-			pseudoVariante = randomItem(variations.epicgames);
+			pseudoVariante = pickVariant("epicgames");
 			break;
 		case "github":
-			pseudoVariante = randomItem(variations.github);
+			pseudoVariante = pickVariant("github");
 			break;
 		case "riotgames":
-			pseudoVariante = randomItem(variations.riotgames);
+			pseudoVariante = pickVariant("riotgames");
 			break;
 		case "leagueoflegends":
-			pseudoVariante = randomItem(variations.leagueoflegends);
+			pseudoVariante = pickVariant("leagueoflegends");
 			break;
 		case "onlyfans":
-			pseudoVariante = randomItem(variations.onlyfans);
+			pseudoVariante = pickVariant("onlyfans");
 			break;
 		case "twitch":
-			pseudoVariante = randomItem(variations.twitch);
+			pseudoVariante = pickVariant("twitch");
 			break;
 		case "youtube":
 			pseudoVariante = generateYouTubeChannelID();
@@ -350,7 +357,7 @@ export function getAge(birthDate: Date): number {
 
 export function getContinent(countryCode: string): string {
 	for (const continent in continentsCountries) {
-		if (continentsCountries[continent].includes(countryCode)) {
+		if (continentsCountries[continent]?.includes(countryCode)) {
 			return continent;
 		}
 	}
