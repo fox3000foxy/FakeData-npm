@@ -8,14 +8,17 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # required for npm trusted publishing (OIDC)
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Setup Bun
@@ -34,11 +37,9 @@ jobs:
 
       - name: Publish to npm
         if: github.ref_type == 'tag' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          # publish to the public registry
-          npm publish
+          # publish to the public registry via OIDC trusted publisher (no token needed)
+          npm publish --provenance
           # conditionally publish to GitHub Packages (requires scoped name)
           name=$(node -p "require('./package.json').name")
           if [[ "$name" == @* ]]; then
