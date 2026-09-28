@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { countries, preferencesPublicitaires, rawDatasets } from "../data.js";
 import type { Profile } from "../types.js";
+import { sexualities } from "./constants.js";
 import {
 	buildCredibleEmailAddress,
 	generateCreditCard,
@@ -62,7 +63,7 @@ export function generateFakeProfile(params: { countryName?: string; birthGender?
 	const city = randomItem((rawDatasets as any)[country.abbreviation].cities);
 	const state = randomItem((rawDatasets as any)[country.abbreviation].states);
 
-	// sexualities array omitted for brevity; copy as in index.ts
+	// sexualities imported from ./constants.ts
 
 	const fakeProfile: any = {
 		name: person.name,
