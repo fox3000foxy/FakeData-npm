@@ -250,19 +250,11 @@ export function buildCredibleEmailAddress(firstName: string, lastName: string, c
 
 export function generateCreditCard(): CreditCardInfo {
 	const cardNumber: number[] = [];
-	let checksum = 0;
-	let issuer: string;
-	let expiryMonth: number;
-	let expiryYear: number;
-	let cvv: string;
 
-	const issuers = ["Mastercard", "Visa", "American Express", "Discover"];
-	const randomIssuerIndex = Math.floor(Math.random() * issuers.length);
-	issuer = issuers[randomIssuerIndex];
+	const issuers = ["Mastercard", "Visa", "American Express", "Discover"] as const;
+	const issuer = randomItem([...issuers]);
 
-	let _firstDigits = `${Math.floor(Math.random() * 9) + 1}${Math.floor(Math.random() * 10)}${Math.floor(Math.random() * 10)}`;
-
-	expiryYear = new Date().getFullYear() + Math.floor(Math.random() * 5) + 1;
+	const expiryYear = new Date().getFullYear() + Math.floor(Math.random() * 5) + 1;
 
 	switch (issuer) {
 		case "Visa":
@@ -275,7 +267,6 @@ export function generateCreditCard(): CreditCardInfo {
 		case "American Express":
 			cardNumber.push(3);
 			cardNumber.push(4 + Math.floor(Math.random() * 4));
-			_firstDigits += Math.floor(Math.random() * 10);
 			break;
 		case "Discover":
 			cardNumber.push(6);
@@ -290,24 +281,32 @@ export function generateCreditCard(): CreditCardInfo {
 		cardNumber.push(Math.floor(Math.random() * 10));
 	}
 
-	for (let i = 0; i < cardLength - 1; i++) {
-		let digit = cardNumber[i];
-		if ((i + 1) % 2 === cardLength % 2) {
-			digit *= 2;
-			if (digit > 9) {
-				digit -= 9;
+	// Luhn check digit: pick the digit making the full number valid.
+	const partial = cardNumber.join("");
+	let checksumDigit = 0;
+	for (let d = 0; d <= 9; d++) {
+		const candidate = partial + String(d);
+		let sum = 0;
+		for (let i = 0; i < candidate.length; i++) {
+			let digit = Number(candidate[i]);
+			if ((candidate.length - i) % 2 === 0) {
+				digit *= 2;
+				if (digit > 9) digit -= 9;
 			}
+			sum += digit;
 		}
-		checksum += digit;
+		if (sum % 10 === 0) {
+			checksumDigit = d;
+			break;
+		}
 	}
-	const checksumDigit = (10 - (checksum % 10)) % 10;
 	cardNumber.push(checksumDigit);
 
 	const cardNumberStr = cardNumber.join("");
 
-	cvv = `${Math.floor(Math.random() * 9)}${Math.floor(Math.random() * 9)}${Math.floor(Math.random() * 9)}`;
+	const cvv = generateRandomDigits(issuer === "American Express" ? 4 : 3);
 
-	expiryMonth = Math.floor(Math.random() * 12) + 1;
+	const expiryMonth = Math.floor(Math.random() * 12) + 1;
 
 	return {
 		cc: cardNumberStr,

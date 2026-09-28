@@ -52,10 +52,7 @@ export function generateFakeProfile(params: { countryName?: string; birthGender?
 
 	const email = buildCredibleEmailAddress(person.name, person.surname, country.abbreviation);
 
-	let creditCardInfo = generateCreditCard();
-	while (creditCardInfo.cc.length !== 16) {
-		creditCardInfo = generateCreditCard();
-	}
+	const creditCardInfo = generateCreditCard();
 	const randomDate = generateRandomDate();
 
 	const preferences = generatePreferences(preferencesPublicitaires, birthGender as "Male" | "Female");
