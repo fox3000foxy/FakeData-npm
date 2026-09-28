@@ -57,7 +57,11 @@ export function generateFakeProfile(params: { countryName?: string; birthGender?
 
 	const preferences = generatePreferences(preferencesPublicitaires, birthGender as "Male" | "Female");
 	const preferencesJSON = JSON.stringify(preferences);
-	const preferencesBase64 = Buffer.from(preferencesJSON).toString("base64");
+	// btoa in browsers, Buffer in Node — keep the lib runtime-agnostic.
+	const preferencesBase64 =
+		typeof Buffer !== "undefined"
+			? Buffer.from(preferencesJSON, "utf-8").toString("base64")
+			: btoa(String.fromCharCode(...new TextEncoder().encode(preferencesJSON)));
 
 	const password = randomItem<string>((rawDatasets as any).common.passwords as string[]) + randomItem<string>((rawDatasets as any).common.passwords as string[]) + range(100, 999);
 	const salt = range(2, 8);

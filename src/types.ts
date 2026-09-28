@@ -93,5 +93,4 @@ export enum Sexuality {
 	Lithsexuality = "Lithsexuality",
 	Fraysexuality = "Fraysexuality",
 	Apollosexuality = "Apollosexuality",
-	Queerplatonic2 = "Queerplatonic",
 }
