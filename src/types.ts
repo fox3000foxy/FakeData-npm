@@ -2,7 +2,10 @@
  * Geographic location of a profile.
  *
  * @property street - Street number and name.
+ * @property city - City name.
+ * @property state - State or region name.
  * @property country - Country reference (name, ISO abbreviation, calling code, continent).
+ * @property continent - Continent name (mirrors `country.continent`).
  */
 export interface Location {
 	street: { number: number; name: string };
@@ -15,6 +18,12 @@ export interface Location {
 /**
  * Password of a profile in raw form plus common hashes.
  * The hashes are computed over `raw + salt`.
+ *
+ * @property raw - Human-readable password.
+ * @property salt - Salt mixed into the hashes.
+ * @property md5 - MD5 hex digest.
+ * @property sha1 - SHA-1 hex digest.
+ * @property sha256 - SHA-256 hex digest.
  */
 export interface Passwords {
 	raw: string;
@@ -28,6 +37,10 @@ export interface Passwords {
  * Fake payment-card data with a Luhn-valid number.
  *
  * @property cc - Full card number (alias: `number`).
+ * @property number - Full card number (alias: `cc`).
+ * @property cvv - Card verification value (4 digits for American Express, 3 otherwise).
+ * @property issuer - Card network, e.g. "Visa".
+ * @property expiration_year - Full year, e.g. 2030.
  * @property expiration_month - 1-12.
  */
 export interface CreditCardInfo {
@@ -52,9 +65,19 @@ export type Preferences = Record<string, number>;
 /**
  * Complete fake user profile as returned by `generateFakeProfile`.
  *
+ * @property name - First name.
+ * @property surname - Last name.
  * @property birth - Birth date as a UTC string.
+ * @property age - Age in full years.
+ * @property username - Unique handle drawn from the dataset pool.
  * @property birthGender - Gender drawn at birth (`Male` or `Female`).
  * @property actualGender - Current gender identity; equals `birthGender` 30% of the time.
+ * @property phone_number - Fake phone number prefixed with the country calling code.
+ * @property location - Geographic location.
+ * @property email - Believable email address.
+ * @property passwords - Raw password plus hashes.
+ * @property social_media - Handles keyed by platform (`null` when absent).
+ * @property credit_card - Fake payment-card data.
  * @property adChoices - Ad preferences as a base64-encoded JSON object.
  */
 export interface Profile {
