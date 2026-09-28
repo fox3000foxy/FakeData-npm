@@ -2,9 +2,6 @@ name: Publish package to npm
 
 on:
   push:
-    branches:
-      - master
-      - main
     tags:
       - 'v*.*.*'
 
