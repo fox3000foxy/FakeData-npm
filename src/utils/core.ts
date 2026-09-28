@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 
 import { continentsCountries, rawDatasets } from "../data.js";
+import type { AdChoiceCategory } from "../data.js";
 import type { CreditCardInfo, Preferences } from "../types";
 
 // helper utilities
@@ -208,7 +209,7 @@ export function generateRandomDigits(length: number): string {
  * @returns {string}
  */
 export function buildCredibleEmailAddress(firstName: string, lastName: string, countryCode: string): string {
-	const domaines: Record<string, string[]> = (rawDatasets as any).mailboxes;
+	const domaines: Record<string, string[]> = rawDatasets.mailboxes;
 
 	if (firstName && lastName) {
 		const firstLower = firstName.toLowerCase();
@@ -331,7 +332,7 @@ export function getRandomUsername(): string {
 	return usernames.splice(usernameIndex, 1)[0] as string;
 }
 
-const usernamesTemplate: string[] = (rawDatasets as any).usernames;
+const usernamesTemplate: string[] = rawDatasets.usernames;
 let usernames: string[] = [...usernamesTemplate];
 
 export function generateRandomDate(): Date {
@@ -364,13 +365,15 @@ export function getContinent(countryCode: string): string {
 	return "Unknown";
 }
 
-export function generatePreferences(categories: any[], gender: "Male" | "Female"): Preferences {
+export function generatePreferences(categories: AdChoiceCategory[], gender: "Male" | "Female"): Preferences {
 	// Work on a copy: the previous version mutated the caller's array
 	// (score *= coef + in-place sort), making repeated calls non-idempotent.
 	const scored = categories.map((categorie) => {
 		const name = Object.keys(categorie)[0] as string;
+		const entry = categorie[name];
+		if (!entry) throw new Error("Empty ad-choice category");
 		const coef = Math.random() * 1 + 0.5;
-		return { name, score: (categorie[name][gender] as number) * coef };
+		return { name, score: entry[gender] * coef };
 	});
 
 	scored.sort((a, b) => b.score - a.score);

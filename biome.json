@@ -1,4 +1,5 @@
 {
+  "files": { "includes": ["src/**/*.ts", "!src/datasets.json"] },
   "assist": {
     "actions": {
       "source": {

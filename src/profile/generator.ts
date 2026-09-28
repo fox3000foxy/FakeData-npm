@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
-import { countries, preferencesPublicitaires, rawDatasets } from "../data.js";
-import type { Profile } from "../types.js";
+import { countries, getCountryDataset, getCountryList, preferencesPublicitaires, rawDatasets } from "../data.js";
+import type { Profile, SocialMediaMap } from "../types.js";
 import { sexualities } from "./constants.js";
 import {
 	buildCredibleEmailAddress,
@@ -37,15 +37,16 @@ export function generateFakeProfile(params: { countryName?: string; birthGender?
 	}
 
 	if (!birthGender) birthGender = Math.random() < 0.5 ? "Male" : "Female";
+	const dataset = getCountryDataset(country.abbreviation);
 	const person: { name: string; surname: string } = {
-		name: randomItem<string>((rawDatasets as any)[country.abbreviation][`${birthGender.toLowerCase()}_first`] as string[]),
-		surname: randomItem<string>((rawDatasets as any)[country.abbreviation].last as string[]),
+		name: randomItem(getCountryList(dataset, `${birthGender.toLowerCase()}_first`, country.abbreviation)),
+		surname: randomItem(getCountryList(dataset, "last", country.abbreviation)),
 	};
 
 	const phoneNumber = generatePhoneNumber(country.phoneCode);
 	const username = getRandomUsername();
 
-	const social_media: any = {};
+	const social_media: SocialMediaMap = {};
 	social_media.twitter = Math.random() < 0.3 ? null : generateSocialHandleVariant(person.name, person.surname, username, "twitter");
 	// ... remainder of social_media assignments remain identical to original
 	// (omitted here for brevity, but would be copied entirely)
@@ -63,22 +64,22 @@ export function generateFakeProfile(params: { countryName?: string; birthGender?
 			? Buffer.from(preferencesJSON, "utf-8").toString("base64")
 			: btoa(String.fromCharCode(...new TextEncoder().encode(preferencesJSON)));
 
-	const password = randomItem<string>((rawDatasets as any).common.passwords as string[]) + randomItem<string>((rawDatasets as any).common.passwords as string[]) + range(100, 999);
+	const password = randomItem(rawDatasets.common.passwords) + randomItem(rawDatasets.common.passwords) + range(100, 999);
 	const salt = range(2, 8);
-	const street = randomItem((rawDatasets as any)[country.abbreviation].street);
-	const city = randomItem((rawDatasets as any)[country.abbreviation].cities);
-	const state = randomItem((rawDatasets as any)[country.abbreviation].states);
+	const street = randomItem(getCountryList(dataset, "street", country.abbreviation));
+	const city = randomItem(getCountryList(dataset, "cities", country.abbreviation));
+	const state = randomItem(getCountryList(dataset, "states", country.abbreviation));
 
 	// sexualities imported from ./constants.ts
 
-	const fakeProfile: any = {
+	const fakeProfile: Profile = {
 		name: person.name,
 		surname: person.surname,
 		birth: randomDate.toUTCString(),
 		age: getAge(randomDate),
 		username,
 		birthGender,
-		actualGender: Math.random() < 0.3 ? birthGender : randomItem(sexualities as string[]),
+		actualGender: Math.random() < 0.3 ? birthGender : randomItem(sexualities),
 		phone_number: phoneNumber,
 		location: {
 			street: {
@@ -109,6 +110,7 @@ export function generateFakeProfile(params: { countryName?: string; birthGender?
 		},
 		social_media,
 		credit_card: {
+			cc: creditCardInfo.cc,
 			number: creditCardInfo.cc,
 			cvv: creditCardInfo.cvv,
 			issuer: creditCardInfo.issuer,

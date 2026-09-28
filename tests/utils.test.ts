@@ -71,8 +71,13 @@ describe('utility helpers', () => {
 
     test('generateCreditCard returns valid-looking number', () => {
         const card = generateCreditCard();
-        expect(card.number).toMatch(/^\d{15,16}$/);
-        expect(card.cvv).toMatch(/^\d{3}$/);
+        if (card.issuer === 'American Express') {
+            expect(card.number).toMatch(/^\d{15}$/);
+            expect(card.cvv).toMatch(/^\d{4}$/);
+        } else {
+            expect(card.number).toMatch(/^\d{16}$/);
+            expect(card.cvv).toMatch(/^\d{3}$/);
+        }
     });
 
     test('getContinent returns string for known code', () => {
