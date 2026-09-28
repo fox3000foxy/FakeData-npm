@@ -64,7 +64,13 @@ export const continentsCountries = rawDatasets.continentsCountries;
  */
 export const mailboxes = rawDatasets.mailboxes;
 
-/** Typed access to a per-country dataset (names, streets, cities, ...). */
+/**
+ * Typed access to a per-country dataset (names, streets, cities, ...).
+ *
+ * @param abbreviation - ISO country code, e.g. "FR".
+ * @returns The country dataset.
+ * @throws Error when no dataset exists for the code.
+ */
 export function getCountryDataset(abbreviation: string): CountryDataset {
 	const entry = rawDatasets[abbreviation];
 	if (!entry || typeof entry !== "object") {
@@ -73,7 +79,15 @@ export function getCountryDataset(abbreviation: string): CountryDataset {
 	return entry as CountryDataset;
 }
 
-/** Pick a non-empty string list from a country dataset, or throw. */
+/**
+ * Pick a non-empty string list from a country dataset.
+ *
+ * @param dataset - Country dataset to read from.
+ * @param key - List key, e.g. "cities" or "male_first".
+ * @param abbreviation - ISO country code, used in error messages.
+ * @returns The string list.
+ * @throws Error when the list is missing, empty or not all strings.
+ */
 export function getCountryList(dataset: CountryDataset, key: string, abbreviation: string): string[] {
 	const list = dataset[key];
 	if (!Array.isArray(list) || list.length === 0 || !list.every((v): v is string => typeof v === "string")) {

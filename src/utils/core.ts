@@ -6,13 +6,24 @@ import type { CreditCardInfo, Preferences } from "../types";
 
 // helper utilities
 
-/** Return a random element from an array. */
+/**
+ * Return a random element from an array.
+ *
+ * @param arr - Non-empty array to pick from.
+ * @returns A random element.
+ * @throws Error when the array is empty.
+ */
 export function randomItem<T>(arr: T[]): T {
 	if (arr.length === 0) throw new Error("randomItem: empty array");
 	return arr[Math.floor(Math.random() * arr.length)] as T;
 }
 
-/** Shuffle the elements of an array in place (Fisher–Yates). */
+/**
+ * Shuffle the elements of an array in place (Fisher–Yates).
+ *
+ * @param arr - Array to shuffle.
+ * @returns The same array, shuffled.
+ */
 export function shuffleArray<T>(arr: T[]): T[] {
 	for (let i = arr.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1)) as number;
@@ -23,12 +34,21 @@ export function shuffleArray<T>(arr: T[]): T[] {
 	return arr;
 }
 
-/** Generate a RFC4122 v4 random UUID string. */
+/**
+ * Generate an RFC4122 v4 random UUID string.
+ *
+ * @returns A UUID string.
+ */
 export function randomUUID(): string {
 	return crypto.randomUUID();
 }
 
-/** Generate a random password of given length composed of letters/numbers. */
+/**
+ * Generate a random password of given length composed of letters and numbers.
+ *
+ * @param length - Desired password length (default 12).
+ * @returns The generated password.
+ */
 export function generatePassword(length: number = 12): string {
 	const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	let pwd = "";
@@ -38,7 +58,13 @@ export function generatePassword(length: number = 12): string {
 	return pwd;
 }
 
-/** Return a random Date between two given dates. */
+/**
+ * Return a random date between two given dates.
+ *
+ * @param start - Lower bound (inclusive).
+ * @param end - Upper bound (exclusive).
+ * @returns A date in [start, end).
+ */
 export function randomDateBetween(start: Date, end: Date): Date {
 	return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
@@ -205,8 +231,9 @@ export function generateSocialHandleVariant(name: string, surname: string, pseud
 
 /**
  * Generate a string of random digits of the given length.
- * @param {number} length
- * @returns {string}
+ *
+ * @param length - Number of digits.
+ * @returns The digit string.
  */
 export function generateRandomDigits(length: number): string {
 	let chiffres = "";
@@ -219,10 +246,13 @@ export function generateRandomDigits(length: number): string {
 /**
  * Construct a believable email address using first and last name and a
  * random domain for the specified country code.
- * @param {string} firstName
- * @param {string} lastName
- * @param {string} countryCode
- * @returns {string}
+ * Falls back to all known domains when the country code has no mailbox entry.
+ *
+ * @param firstName - First name.
+ * @param lastName - Last name.
+ * @param countryCode - ISO country code used to pick the domain.
+ * @returns The email address.
+ * @throws Error when the first or last name is missing.
  */
 export function buildCredibleEmailAddress(firstName: string, lastName: string, countryCode: string): string {
 	const domaines: Record<string, string[]> = rawDatasets.mailboxes;
