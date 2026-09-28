@@ -1,3 +1,9 @@
+/**
+ * Geographic location of a profile.
+ *
+ * @property street - Street number and name.
+ * @property country - Country reference (name, ISO abbreviation, calling code, continent).
+ */
 export interface Location {
 	street: { number: number; name: string };
 	city: string;
@@ -6,6 +12,10 @@ export interface Location {
 	continent: string;
 }
 
+/**
+ * Password of a profile in raw form plus common hashes.
+ * The hashes are computed over `raw + salt`.
+ */
 export interface Passwords {
 	raw: string;
 	salt: number;
@@ -14,6 +24,12 @@ export interface Passwords {
 	sha256: string;
 }
 
+/**
+ * Fake payment-card data with a Luhn-valid number.
+ *
+ * @property cc - Full card number (alias: `number`).
+ * @property expiration_month - 1-12.
+ */
 export interface CreditCardInfo {
 	cc: string;
 	number: string;
@@ -23,9 +39,24 @@ export interface CreditCardInfo {
 	expiration_month: number;
 }
 
+/**
+ * Social-media handles keyed by platform (e.g. `twitter`, `instagram`).
+ * A `null` value means the profile has no account on that platform.
+ */
 export type SocialMediaMap = Record<string, string | null>;
+/**
+ * Ad-preference scores keyed by category name.
+ */
 export type Preferences = Record<string, number>;
 
+/**
+ * Complete fake user profile as returned by `generateFakeProfile`.
+ *
+ * @property birth - Birth date as a UTC string.
+ * @property birthGender - Gender drawn at birth (`Male` or `Female`).
+ * @property actualGender - Current gender identity; equals `birthGender` 30% of the time.
+ * @property adChoices - Ad preferences as a base64-encoded JSON object.
+ */
 export interface Profile {
 	name: string;
 	surname: string;
@@ -43,6 +74,10 @@ export interface Profile {
 	adChoices: string;
 }
 
+/**
+ * Pool of gender identities, sexual and romantic orientations
+ * used to draw `Profile.actualGender`.
+ */
 export enum Sexuality {
 	Lesbian = "Lesbian",
 	Gay = "Gay",

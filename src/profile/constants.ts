@@ -1,3 +1,6 @@
+/**
+ * Pool of identities/orientations used to draw `Profile.actualGender`.
+ */
 export const sexualities: string[] = [
 	"Lesbian",
 	"Gay",

@@ -1,5 +1,8 @@
 import datasets from "./datasets.json";
 
+/**
+ * Country reference entry (display name, ISO code, calling code, continent).
+ */
 export interface Country {
 	name: string;
 	abbreviation: string;
@@ -7,6 +10,9 @@ export interface Country {
 	continent: string;
 }
 
+/**
+ * Per-country name/address pools. Each list may be absent for a given country.
+ */
 export interface CountryDataset {
 	male_first?: string[];
 	female_first?: string[];
@@ -17,8 +23,14 @@ export interface CountryDataset {
 	[key: string]: unknown;
 }
 
+/**
+ * Ad-choice category with a base score per gender.
+ */
 export type AdChoiceCategory = Record<string, Record<"Male" | "Female", number>>;
 
+/**
+ * Shape of `datasets.json`: reference tables plus one `CountryDataset` per ISO country code.
+ */
 export interface Datasets {
 	countries: Country[];
 	adChoices: AdChoiceCategory[];
@@ -32,12 +44,24 @@ export interface Datasets {
 	[key: string]: unknown; // allow extra country-specific keys
 }
 
-// export raw dataset for callers who want to peek or extend
+/** Raw dataset for callers who want to peek or extend the built-in pools. */
 export const rawDatasets: Datasets = datasets as unknown as Datasets;
 
+/**
+ * List of supported countries.
+ */
 export const countries = rawDatasets.countries;
+/**
+ * Ad-choice categories used to build `Profile.adChoices`.
+ */
 export const preferencesPublicitaires = rawDatasets.adChoices;
+/**
+ * Continent lookup: continent name to ISO country codes.
+ */
 export const continentsCountries = rawDatasets.continentsCountries;
+/**
+ * Email domains keyed by ISO country code.
+ */
 export const mailboxes = rawDatasets.mailboxes;
 
 /** Typed access to a per-country dataset (names, streets, cities, ...). */

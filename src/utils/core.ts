@@ -43,6 +43,12 @@ export function randomDateBetween(start: Date, end: Date): Date {
 	return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
 
+/**
+ * Build a fake phone number by appending 9 random digits to a country calling code.
+ *
+ * @param countryCode - Calling code prefix, e.g. "+33".
+ * @returns The concatenated fake number.
+ */
 export function generatePhoneNumber(countryCode: string): string {
 	const numeroAleatoire = Math.floor(Math.random() * 1000000000)
 		.toString()
@@ -50,6 +56,16 @@ export function generatePhoneNumber(countryCode: string): string {
 	return `${countryCode}${numeroAleatoire}`;
 }
 
+/**
+ * Derive a plausible social-media handle from a person's names and base pseudo.
+ *
+ * @param name - First name.
+ * @param surname - Last name.
+ * @param pseudo - Base username.
+ * @param mediaSocial - Target platform (e.g. "twitter", "instagram", "youtube"). Unknown platforms fall back to the lowercased pseudo.
+ * @returns The generated handle (a YouTube channel ID for "youtube").
+ * @throws Error when any parameter is missing.
+ */
 export function generateSocialHandleVariant(name: string, surname: string, pseudo: string, mediaSocial: string): string {
 	if (!(name && surname && pseudo && mediaSocial)) {
 		throw new Error("Missing parameters");
@@ -256,6 +272,12 @@ export function buildCredibleEmailAddress(firstName: string, lastName: string, c
 	}
 }
 
+/**
+ * Generate fake Luhn-valid credit-card data (Visa, Mastercard, American Express or Discover).
+ * American Express numbers have 15 digits and a 4-digit CVV, other issuers 16 digits and a 3-digit CVV.
+ *
+ * @returns Card data with `cc`/`number`, `cvv`, `issuer` and expiration fields.
+ */
 export function generateCreditCard(): CreditCardInfo {
 	const cardNumber: number[] = [];
 
@@ -326,6 +348,11 @@ export function generateCreditCard(): CreditCardInfo {
 	};
 }
 
+/**
+ * Draw a username from the dataset pool without replacement until exhausted, then refill the pool.
+ *
+ * @returns A username string.
+ */
 export function getRandomUsername(): string {
 	if (usernames.length === 0) usernames = [...usernamesTemplate];
 	const usernameIndex = Math.floor(Math.random() * usernames.length);
@@ -335,6 +362,11 @@ export function getRandomUsername(): string {
 const usernamesTemplate: string[] = rawDatasets.usernames;
 let usernames: string[] = [...usernamesTemplate];
 
+/**
+ * Generate a random adult birth date between 19 and 80 years ago.
+ *
+ * @returns A date between the two bounds.
+ */
 export function generateRandomDate(): Date {
 	const now = new Date();
 	const youngest = new Date(now);
@@ -344,6 +376,12 @@ export function generateRandomDate(): Date {
 	return randomDateBetween(oldest, youngest);
 }
 
+/**
+ * Compute full years of age for a birth date.
+ *
+ * @param birthDate - Birth date.
+ * @returns Age in full years.
+ */
 export function getAge(birthDate: Date): number {
 	const today = new Date();
 	let age = today.getFullYear() - birthDate.getFullYear();
@@ -356,6 +394,12 @@ export function getAge(birthDate: Date): number {
 
 // continent lookup helper relies on data module
 
+/**
+ * Resolve a continent name from an ISO country code.
+ *
+ * @param countryCode - ISO country code, e.g. "US".
+ * @returns The continent name, or "Unknown" when unmapped.
+ */
 export function getContinent(countryCode: string): string {
 	for (const continent in continentsCountries) {
 		if (continentsCountries[continent]?.includes(countryCode)) {
@@ -365,6 +409,15 @@ export function getContinent(countryCode: string): string {
 	return "Unknown";
 }
 
+/**
+ * Score ad-choice categories for a gender and return the top 15-20 as a preference map.
+ * Pure: scores are computed on a copy, the input array is never mutated.
+ *
+ * @param categories - Ad-choice categories with base scores per gender.
+ * @param gender - Gender used for scoring.
+ * @returns Preference map of category name to score.
+ * @throws Error when a category entry is empty.
+ */
 export function generatePreferences(categories: AdChoiceCategory[], gender: "Male" | "Female"): Preferences {
 	// Work on a copy: the previous version mutated the caller's array
 	// (score *= coef + in-place sort), making repeated calls non-idempotent.
@@ -386,6 +439,11 @@ export function generatePreferences(categories: AdChoiceCategory[], gender: "Mal
 	return preferences;
 }
 
+/**
+ * Generate a random YouTube channel ID ("UC" followed by 22 characters).
+ *
+ * @returns The channel ID string.
+ */
 export function generateYouTubeChannelID(): string {
 	const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 	const length = 22;
@@ -396,6 +454,13 @@ export function generateYouTubeChannelID(): string {
 	return channelID;
 }
 
+/**
+ * Return a random integer in the half-open interval [min, max).
+ *
+ * @param min - Inclusive lower bound.
+ * @param max - Exclusive upper bound.
+ * @returns A random integer.
+ */
 export function range(min: number, max: number): number {
 	return Math.floor(Math.random() * (max - min)) + min;
 }

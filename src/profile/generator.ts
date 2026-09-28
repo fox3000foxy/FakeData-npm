@@ -17,8 +17,13 @@ import {
 } from "../utils/index.js";
 
 /**
- * Generate a fake user profile object.
- * @param params
+ * Generate a complete fake user profile.
+ *
+ * @param params - Generation options.
+ * @param params.countryName - Full country name (e.g. "France"); a random country is used when omitted.
+ * @param params.birthGender - "Male" or "Female"; drawn at random when omitted.
+ * @returns A fully populated `Profile` object.
+ * @throws Error when `countryName` matches no known country or when a dataset list is missing.
  */
 export function generateFakeProfile(params: { countryName?: string; birthGender?: string }): Profile {
 	let { countryName, birthGender } = params;
@@ -59,10 +64,7 @@ export function generateFakeProfile(params: { countryName?: string; birthGender?
 	const preferences = generatePreferences(preferencesPublicitaires, birthGender as "Male" | "Female");
 	const preferencesJSON = JSON.stringify(preferences);
 	// btoa in browsers, Buffer in Node — keep the lib runtime-agnostic.
-	const preferencesBase64 =
-		typeof Buffer !== "undefined"
-			? Buffer.from(preferencesJSON, "utf-8").toString("base64")
-			: btoa(String.fromCharCode(...new TextEncoder().encode(preferencesJSON)));
+	const preferencesBase64 = typeof Buffer !== "undefined" ? Buffer.from(preferencesJSON, "utf-8").toString("base64") : btoa(String.fromCharCode(...new TextEncoder().encode(preferencesJSON)));
 
 	const password = randomItem(rawDatasets.common.passwords) + randomItem(rawDatasets.common.passwords) + range(100, 999);
 	const salt = range(2, 8);
