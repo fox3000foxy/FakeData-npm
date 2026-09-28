@@ -22,13 +22,18 @@ import {
  */
 export function generateFakeProfile(params: { countryName?: string; birthGender?: string }): Profile {
 	let { countryName, birthGender } = params;
-	let country: any;
-	if (!countryName) country = countries[Math.floor(Math.random() * countries.length)];
-	else country = countries.find((u) => u.name === countryName);
+	let country = countryName ? countries.find((u) => u.name === countryName) : randomItem(countries);
+	if (!country) {
+		throw new Error(`Unknown countryName "${countryName}". Expected one of: ${countries.map((c) => c.name).join(", ")}`);
+	}
 	let continent = getContinent(country.abbreviation);
-	while (continent === "Unknown") {
-		country = countries[Math.floor(Math.random() * countries.length)];
+	// Guard against datasets where a country has no continent mapping:
+	// retry a bounded number of times, then fall back to the drawn country.
+	let attempts = 0;
+	while (continent === "Unknown" && attempts < 10) {
+		country = randomItem(countries);
 		continent = getContinent(country.abbreviation);
+		attempts++;
 	}
 
 	if (!birthGender) birthGender = Math.random() < 0.5 ? "Male" : "Female";
