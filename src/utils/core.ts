@@ -1,12 +1,13 @@
 import crypto from "node:crypto";
 
-import { rawDatasets } from "../data.js";
+import { continentsCountries, rawDatasets } from "../data.js";
 import type { CreditCardInfo, Preferences } from "../types";
 
 // helper utilities
 
 /** Return a random element from an array. */
 export function randomItem<T>(arr: T[]): T {
+	if (arr.length === 0) throw new Error("randomItem: empty array");
 	return arr[Math.floor(Math.random() * arr.length)] as T;
 }
 
@@ -14,7 +15,7 @@ export function randomItem<T>(arr: T[]): T {
 export function shuffleArray<T>(arr: T[]): T[] {
 	for (let i = arr.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1)) as number;
-		if (arr[i]) if (arr[j]) [arr[i], arr[j]] = [arr[j], arr[i]];
+		[arr[i], arr[j]] = [arr[j], arr[i]];
 	}
 	return arr;
 }
@@ -52,7 +53,6 @@ export function generateSocialHandleVariant(name: string, surname: string, pseud
 	}
 
 	const pseudoEnMinuscules = pseudo.toLowerCase();
-	const _nameEnMinuscules = name.toLowerCase();
 	const surnameEnMinuscules = surname.toLowerCase();
 	const numeroRandom = Math.floor(Math.random() * 100);
 	const chiffresSuite = generateRandomDigits(5);
@@ -106,7 +106,7 @@ export function generateSocialHandleVariant(name: string, surname: string, pseud
 	let pseudoVariante = pseudoEnMinuscules;
 	switch (mediaSocial.toLowerCase()) {
 		case "twitter":
-			pseudoVariante = `@${pseudoEnMinuscules}`;
+			pseudoVariante = randomItem(variations.twitter);
 			break;
 		case "instagram":
 			pseudoVariante = Math.random() < 0.5 ? randomItem(variations.instagram) : pseudoEnMinuscules;
@@ -159,6 +159,9 @@ export function generateSocialHandleVariant(name: string, surname: string, pseud
 		case "riotgames":
 			pseudoVariante = randomItem(variations.riotgames);
 			break;
+		case "leagueoflegends":
+			pseudoVariante = randomItem(variations.leagueoflegends);
+			break;
 		case "onlyfans":
 			pseudoVariante = randomItem(variations.onlyfans);
 			break;
@@ -198,13 +201,14 @@ export function generateRandomDigits(length: number): string {
  * @returns {string}
  */
 export function buildCredibleEmailAddress(firstName: string, lastName: string, countryCode: string): string {
-	const domaines: any = (rawDatasets as any).mailboxes;
+	const domaines: Record<string, string[]> = (rawDatasets as any).mailboxes;
 
 	if (firstName && lastName) {
 		const firstLower = firstName.toLowerCase();
 		const lastLower = lastName.toLowerCase();
 
-		const domaineAleatoire = randomItem(domaines[countryCode]);
+		const candidates = domaines[countryCode] ?? Object.values(domaines).flat();
+		const domaineAleatoire = randomItem(candidates);
 		const choixVariante = Math.floor(Math.random() * 10);
 
 		let adresseEmail = "";
@@ -318,21 +322,19 @@ export function generateCreditCard(): CreditCardInfo {
 export function getRandomUsername(): string {
 	if (usernames.length === 0) usernames = [...usernamesTemplate];
 	const usernameIndex = Math.floor(Math.random() * usernames.length);
-	const username = usernames[usernameIndex];
-	return username;
+	return usernames.splice(usernameIndex, 1)[0] as string;
 }
 
 const usernamesTemplate: string[] = (rawDatasets as any).usernames;
 let usernames: string[] = [...usernamesTemplate];
 
 export function generateRandomDate(): Date {
-	const dateActuelle = new Date();
-	const dateIlYa13Ans = new Date(dateActuelle);
-	dateIlYa13Ans.setFullYear(dateIlYa13Ans.getFullYear() - 19);
-	const dateIlYa30Ans = new Date(dateActuelle);
-	dateIlYa30Ans.setFullYear(dateIlYa30Ans.getFullYear() - 80);
-	const dateAleatoire = new Date(dateIlYa13Ans.getTime() + Math.random() * (dateIlYa30Ans.getTime() - dateIlYa13Ans.getTime()));
-	return dateAleatoire;
+	const now = new Date();
+	const youngest = new Date(now);
+	youngest.setFullYear(youngest.getFullYear() - 19);
+	const oldest = new Date(now);
+	oldest.setFullYear(oldest.getFullYear() - 80);
+	return randomDateBetween(oldest, youngest);
 }
 
 export function getAge(birthDate: Date): number {
@@ -346,7 +348,6 @@ export function getAge(birthDate: Date): number {
 }
 
 // continent lookup helper relies on data module
-import { continentsCountries } from "../data.js";
 
 export function getContinent(countryCode: string): string {
 	for (const continent in continentsCountries) {
@@ -358,21 +359,21 @@ export function getContinent(countryCode: string): string {
 }
 
 export function generatePreferences(categories: any[], gender: "Male" | "Female"): Preferences {
-	categories.forEach((categorie) => {
-		const categorieName = Object.keys(categorie)[0];
+	// Work on a copy: the previous version mutated the caller's array
+	// (score *= coef + in-place sort), making repeated calls non-idempotent.
+	const scored = categories.map((categorie) => {
+		const name = Object.keys(categorie)[0] as string;
 		const coef = Math.random() * 1 + 0.5;
-		categorie[categorieName][gender] *= coef;
+		return { name, score: (categorie[name][gender] as number) * coef };
 	});
 
-	categories.sort((a, b) => b[Object.keys(b)[0]][gender] - a[Object.keys(a)[0]][gender]);
-	const categoriesSelectionnees = categories.slice(0, Math.floor(Math.random() * 6) + 15);
+	scored.sort((a, b) => b.score - a.score);
+	const selected = scored.slice(0, Math.floor(Math.random() * 6) + 15);
 
-	const preferences: any = {};
-	categoriesSelectionnees.forEach((categorie) => {
-		const categorieName = Object.keys(categorie)[0];
-		const score = categorie[categorieName][gender];
-		preferences[categorieName] = score;
-	});
+	const preferences: Preferences = {};
+	for (const { name, score } of selected) {
+		preferences[name] = score;
+	}
 	return preferences;
 }
 
